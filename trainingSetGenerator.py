@@ -8,7 +8,7 @@ import spotipy
 import spotipy.util as util
 
 # Define the scope of what you would like to access from the user
-scope = 'playlist-read-private playlist-read-collaborative'
+scope = 'user-read-private user-read-email'
 
 if len(sys.argv) > 1:
     # Ask the user for their username
@@ -22,8 +22,11 @@ else:
 token = util.prompt_for_user_token(username, scope)
 
 if token:
-    # Create a new spotipy object with the token
-    spotify = spotipy.Spotify(auth=token)
+    # Create a new Spotipy object with the token
+    sp = spotipy.Spotify(auth=token)
+    print ("Authorization Successful")
 else:
     print "Can't get token for", username
 
+
+print sp.user_playlist(username, 'playlist ID goes here')
