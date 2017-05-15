@@ -29,4 +29,4 @@ else:
     print "Can't get token for", username
 
 
-print sp.user_playlist(username, 'playlist ID goes here')
+playlist = sp.user_playlist(username, '2GeC5SRBJ05eh57BGUmCd5')
