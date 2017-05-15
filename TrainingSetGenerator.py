@@ -6,6 +6,7 @@ which can be used to train machine learning algorithms in the form of a text fil
 import sys
 import spotipy
 import spotipy.util as util
+import pprint
 
 # Define the scope of what you would like to access from the user
 scope = 'user-read-private user-read-email'
@@ -30,3 +31,8 @@ else:
 
 
 playlist = sp.user_playlist(username, '2GeC5SRBJ05eh57BGUmCd5')
+
+# Print out playlist name
+print playlist['name']
+# Print out playlist JSON data
+pprint.pprint(playlist)
