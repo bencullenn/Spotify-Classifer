@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="f190e6d7-d81b-4860-8f36-3229487ad94e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/trainingSetGenerator.py" afterPath="$PROJECT_DIR$/trainingSetGenerator.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -253,7 +252,14 @@
       <option name="project" value="LOCAL" />
       <updated>1494274512594</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="User Authentication System Working. Code to read a playlist from the user is added at the end to verify that the authorization was actually successful">
+      <created>1494861269131</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1494861269131</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -287,7 +293,8 @@
     <MESSAGE value="Inital Commit" />
     <MESSAGE value="Training Set Generator Added" />
     <MESSAGE value="Added code for user authentication to access private data" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added code for user authentication to access private data" />
+    <MESSAGE value="User Authentication System Working. Code to read a playlist from the user is added at the end to verify that the authorization was actually successful" />
+    <option name="LAST_COMMIT_MESSAGE" value="User Authentication System Working. Code to read a playlist from the user is added at the end to verify that the authorization was actually successful" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
