@@ -43,6 +43,7 @@ for track in tracks:
     print track['track']['name']
     print track['track']['artists'][0]['name']
     print track['track']['album']['name']
+    print track['track']['external_urls']['spotify']
     print "\n"
 
 pprint.pprint(playlist)
