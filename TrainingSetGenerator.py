@@ -7,6 +7,7 @@ import sys
 import spotipy
 import spotipy.util as util
 import pprint
+import json
 
 # Define the scope of what you would like to access from the user
 scope = 'user-read-private user-read-email'
@@ -30,7 +31,7 @@ else:
     print "Can't get token for", username
 
 
-playlist = sp.user_playlist(username, '2GeC5SRBJ05eh57BGUmCd5')
+playlist = sp.user_playlist(username, '6KNC0KnNsw7hJUGwlr1hCO')
 tracks = playlist['tracks']['items']
 
 # Print out playlist name
@@ -38,12 +39,18 @@ print playlist['name']
 print"___________________________\n"
 
 # Print out playlist JSON data
+links = []
 
 for track in tracks:
     print track['track']['name']
     print track['track']['artists'][0]['name']
     print track['track']['album']['name']
     print track['track']['external_urls']['spotify']
+    links.append(track['track']['uri'])
+
     print "\n"
 
-pprint.pprint(playlist)
+audioFeatures = sp.audio_features(links)
+
+with open('data.txt','w') as outfile:
+    json.dump(audioFeatures,outfile)
