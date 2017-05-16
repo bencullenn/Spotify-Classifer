@@ -52,5 +52,5 @@ for track in tracks:
 
 audioFeatures = sp.audio_features(links)
 
-with open('data.txt','w') as outfile:
-    json.dump(audioFeatures,outfile)
+with open('data.txt', 'w') as outfile:
+    json.dump(audioFeatures, outfile)
