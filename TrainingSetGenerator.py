@@ -25,14 +25,24 @@ token = util.prompt_for_user_token(username, scope)
 if token:
     # Create a new Spotipy object with the token
     sp = spotipy.Spotify(auth=token)
-    print ("Authorization Successful")
+    print ("Authorization Successful\n")
 else:
     print "Can't get token for", username
 
 
 playlist = sp.user_playlist(username, '2GeC5SRBJ05eh57BGUmCd5')
+tracks = playlist['tracks']['items']
 
 # Print out playlist name
 print playlist['name']
+print"___________________________\n"
+
 # Print out playlist JSON data
+
+for track in tracks:
+    print track['track']['name']
+    print track['track']['artists'][0]['name']
+    print track['track']['album']['name']
+    print "\n"
+
 pprint.pprint(playlist)
