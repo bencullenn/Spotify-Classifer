@@ -7,7 +7,7 @@ import sys
 import spotipy
 import spotipy.util as util
 import pprint
-import json
+import csv
 
 # Define the scope of what you would like to access from the user
 scope = 'user-read-private user-read-email'
@@ -52,5 +52,10 @@ for track in tracks:
 
 audioFeatures = sp.audio_features(links)
 
-with open('data.txt', 'w') as outfile:
-    json.dump(audioFeatures, outfile)
+pprint.pprint(audioFeatures)
+
+with open('data.csv','wb') as csvfile:
+    dataWriter = csv.writer(csvfile, delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    for featureSet in audioFeatures:
+        dataWriter.writerow([featureSet['danceability'], featureSet['instrumentalness']])
+
