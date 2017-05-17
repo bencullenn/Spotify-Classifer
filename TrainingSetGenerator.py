@@ -38,24 +38,29 @@ tracks = playlist['tracks']['items']
 print playlist['name']
 print"___________________________\n"
 
-# Print out playlist JSON data
+# Create an array for links to all the songs in the playlist
 links = []
 
+# Print out playlist JSON data and add uri data to links array
 for track in tracks:
     print track['track']['name']
     print track['track']['artists'][0]['name']
     print track['track']['album']['name']
     print track['track']['external_urls']['spotify']
     links.append(track['track']['uri'])
-
     print "\n"
 
+# Fetch the audio features for each song in the the playlist and save it to an array
 audioFeatures = sp.audio_features(links)
 
+# Print out the audio features for the tracks
 pprint.pprint(audioFeatures)
 
-with open('data.csv','wb') as csvfile:
-    dataWriter = csv.writer(csvfile, delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+# Create a new csv file
+with open('data.csv', 'wb') as csvfile:
+    # Create a writer for the csv file
+    dataWriter = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    # For each track write certain attributes to the csv file
     for featureSet in audioFeatures:
-        dataWriter.writerow([featureSet['danceability'], featureSet['instrumentalness']])
+        dataWriter.writerow([featureSet['acousticness'], featureSet['danceability'], featureSet['energy'], featureSet['instrumentalness'], featureSet['liveness'], featureSet['speechiness'], featureSet['valence']])
 
