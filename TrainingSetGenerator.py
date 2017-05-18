@@ -57,6 +57,7 @@ audioFeatures = sp.audio_features(links)
 pprint.pprint(audioFeatures)
 
 pprint.pprint(playlist)
+print "test"
 # Create a new csv file
 with open('data.csv', 'wb') as csvfile:
     # Create a writer for the csv file
