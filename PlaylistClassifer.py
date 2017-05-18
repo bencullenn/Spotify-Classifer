@@ -26,9 +26,10 @@ def createTestSet(dataSet, testSetProportion):
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
 print (data)
 test, train = createTestSet(data, .10)
-for p in test:
-    print(p)
 
-for p in train:
-    print(p)
+#for p in test:
+ #   print(p)
+
+#for p in train:
+ #   print(p)
 
