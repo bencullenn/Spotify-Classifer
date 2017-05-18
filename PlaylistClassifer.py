@@ -6,3 +6,7 @@ The algorithm is then tested with the "Test Set" text file and the accuracy scor
 The algorithm can then be used give the fit of a link to any song on Spotify
 """
 
+import pandas as pd
+
+data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
+print (data)

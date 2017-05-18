@@ -62,6 +62,10 @@ pprint.pprint(playlist)
 with open('data.csv', 'wb') as csvfile:
     # Create a writer for the csv file
     dataWriter = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+    # Write a header for the CSV
+    dataWriter.writerow(['Acoustic', 'Dance', 'Energy', 'Instrumental', 'Live', 'Speech', 'Valence'])
+
     # For each track write certain attributes to the csv file
     for featureSet in audioFeatures:
         dataWriter.writerow([featureSet['acousticness'], featureSet['danceability'], featureSet['energy'], featureSet['instrumentalness'], featureSet['liveness'], featureSet['speechiness'], featureSet['valence']])
