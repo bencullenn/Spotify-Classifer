@@ -12,6 +12,13 @@ import csv
 # Define the scope of what you would like to access from the user
 scope = 'user-read-private user-read-email'
 
+# The ID's for a few of our playlists are included here
+largeDataSetExamplePlaylist = "0Y6fI3iYSYSfZY1B7X3tvU"
+hipHopTrainingSetPlaylist = "6KNC0KnNsw7hJUGwlr1hCO"
+
+# Set the playlistID to the playlist that you want to use
+playlistID = hipHopTrainingSetPlaylist
+
 if len(sys.argv) > 1:
     # Ask the user for their username
     username = sys.argv[1]
@@ -30,7 +37,7 @@ if token:
     print ("Authorization Successful\n")
 
     # Retrieve the playlist data in JSON format
-    playlist = sp.user_playlist(username, '6KNC0KnNsw7hJUGwlr1hCO')
+    playlist = sp.user_playlist(username, playlistID)
 
     # Create two list objects, one to store all of JSON data for the tracks in the playlist
     # and another to store the uri link data for audio feature processing
@@ -44,11 +51,13 @@ if token:
     # While the tracks list contains less than the number of tracks
     # in the playlist add chunks of 100 songs at a time to the tracks playlist
     while len(tracks) < playlistNumOfTracks:
-        linkListSubset = sp.user_playlist_tracks(username, '6KNC0KnNsw7hJUGwlr1hCO', fields='items', offset=offset)['items']
+        linkListSubset = sp.user_playlist_tracks(username, playlistID, fields='items', offset=offset)['items']
         for track in linkListSubset:
             tracks.append(track)
-        offset += 100
-        print len(tracks)
+        offset += 1
+        print("{}{}".format("Length of playlist:", playlistNumOfTracks))
+        print("{}{}".format("Current amount of tracks retrieved:", len(tracks)))
+        print("{}{}".format("Offset Value:", offset))
 
     # Print out playlist name
     print playlist['name']
@@ -92,7 +101,7 @@ if token:
 
         # Change the indices to include the next 100 songs
         startIndex = endIndex
-        endIndex += startIndex + 100
+        endIndex += 100
 
         # Print some information to know what's happening
         print("{}{}".format("Amount of links and audio features are the same:", len(audioFeatures) == len(links)))
