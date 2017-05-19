@@ -7,14 +7,29 @@ The algorithm can then be used give the fit of a link to any song on Spotify
 """
 
 import pandas as pd
+import random
 
 
 def createTestSet(dataSet, testSetProportion):
     testSetSize = int(len(dataSet)*testSetProportion)
-    print ("{}{}".format("DataSet Size:", len(dataSet)))
-    print ("{}{}".format("Test set Size:", testSetSize))
-
+    #print ("{}{}".format("DataSet Size:", len(dataSet)))
+    #print ("{}{}".format("Test set Size:", testSetSize))
+    trainSize = int(len(dataSet) * (1-testSetProportion))
+    trainSet = []
+    testSet = []
+    for i, row in dataSet.iterrows():  # i: dataframe index; row: each row in series format
+        if i%10 == 0:
+            testSet.append(row)
+        else:
+            trainSet.append(row)
+    return testSet, trainSet
 
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
 print (data)
-createTestSet(data, .10)
+test, train = createTestSet(data, .10)
+for p in test:
+    print(p)
+
+for p in train:
+    print(p)
+
