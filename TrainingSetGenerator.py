@@ -9,6 +9,7 @@ import spotipy.util as util
 import pprint
 import csv
 
+
 def getUsername():
     if len(sys.argv) > 1:
         # Ask the user for their username
@@ -18,16 +19,22 @@ def getUsername():
         print "Usage: %s username" % (sys.argv[0],)
         sys.exit()
 
+
 def createTokenForScope(username,scope):
     # Get token for user
     token = util.prompt_for_user_token(username, scope)
 
     # If given valid username token
     if token:
+        print ("Token Successfully Generated")
         return token
     else:
         print "Can't get token for", username
 
+
+def getPlaylistForID(playlistID):
+    # Retrieve the playlist data in JSON format
+    return sp.user_playlist(username, playlistID)
 
 # Define the scope of what you would like to access from the user
 scope = 'user-read-private user-read-email'
@@ -43,12 +50,11 @@ playlistID = hipHopTrainingSetPlaylist
 username = getUsername()
 token = createTokenForScope(scope=scope, username=username)
 
-# Create a new Spotipy object with the token
+# Create a spotipy objects
 sp = spotipy.Spotify(auth=token)
-print ("Authorization Successful\n")
 
 # Retrieve the playlist data in JSON format
-playlist = sp.user_playlist(username, playlistID)
+playlist = getPlaylistForID(playlistID)
 
 # Create two list objects, one to store all of JSON data for the tracks in the playlist
 # and another to store the uri link data for audio feature processing
