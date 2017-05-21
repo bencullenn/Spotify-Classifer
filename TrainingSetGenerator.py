@@ -38,6 +38,7 @@ def getPlaylistForID(playlistID):
     # Retrieve the playlist data in JSON format
     return sp.user_playlist(username, playlistID)
 
+
 def getTracksFromPlaylist(playlistID):
     # Retrieve the playlist data in JSON format
     playlist = getPlaylistForID(playlistID)
@@ -108,7 +109,6 @@ def getAudioFeaturesForPlaylistID(playlistID):
         print("{}{}".format("Start Index:", startIndex))
         print("{}{}".format("End Index:", endIndex))
         print "\n"
-
     return audioFeatures
 
 
@@ -128,7 +128,8 @@ def displayPlaylist(playlistID):
         print track['track']['external_urls']['spotify']
         print "\n"
 
-def writeAudioFeaturesToCSVFile(audioFeatures):
+
+def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
     # Create a new csv file
     with open('data.csv', 'wb') as csvfile:
         # Create a writer for the csv file
@@ -141,17 +142,27 @@ def writeAudioFeaturesToCSVFile(audioFeatures):
                              'Instrumental',
                              'Live',
                              'Speech',
-                             'Valence'])
+                             'Valence',
+                             'Label'])
 
         # For each track write certain attributes to the csv file
-        for featureSet in audioFeatures:
+        for featureSet in positiveAudioFeatures:
             dataWriter.writerow([featureSet['acousticness'],
                                  featureSet['danceability'],
                                  featureSet['energy'],
                                  featureSet['instrumentalness'],
                                  featureSet['liveness'],
                                  featureSet['speechiness'],
-                                 featureSet['valence']])
+                                 featureSet['valence'], 0])
+
+        for featureSet in negativeAudioFeatures:
+            dataWriter.writerow([featureSet['acousticness'],
+                                 featureSet['danceability'],
+                                 featureSet['energy'],
+                                 featureSet['instrumentalness'],
+                                 featureSet['liveness'],
+                                 featureSet['speechiness'],
+                                 featureSet['valence'], 1])
 
         print("Data successfully written to csv file")
 
@@ -160,17 +171,19 @@ Variable Declarations
 """
 # Define the scope of what you would like to access from the user
 scope = 'user-read-private user-read-email'
-# The ID's for a few of our playlists are included here
-largeDataSetExamplePlaylist = "0Y6fI3iYSYSfZY1B7X3tvU"
-hipHopTrainingSetPlaylist = "6KNC0KnNsw7hJUGwlr1hCO"
-# Set the playlistID to the playlist that you want to use
-playlistID = largeDataSetExamplePlaylist
+
+# Get the ID's for the playlists of your postive and negative examples
+negativeExamplesPlaylistID = "0Y6fI3iYSYSfZY1B7X3tvU"
+positiveExamplesPlaylistID = "6KNC0KnNsw7hJUGwlr1hCO"
+
 # Create username and Token objects
 username = getUsername()
 token = createTokenForScope(scope=scope, username=username)
-# Create a spotipy objects
-sp = spotipy.Spotify(auth=token)
-# Retrieve the playlist data in JSON format
-playlist = getPlaylistForID(playlistID)
 
-writeAudioFeaturesToCSVFile(getAudioFeaturesForPlaylistID(playlistID))
+# Create a Spotipy object
+sp = spotipy.Spotify(auth=token)
+
+positiveExamplesData = getAudioFeaturesForPlaylistID(positiveExamplesPlaylistID)
+negativeExamplesData = getAudioFeaturesForPlaylistID(negativeExamplesPlaylistID)
+
+writeAudioFeaturesToCSVFile(positiveAudioFeatures=positiveExamplesData, negativeAudioFeatures=negativeExamplesData)
