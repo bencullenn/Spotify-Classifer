@@ -153,7 +153,7 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
                                  featureSet['instrumentalness'],
                                  featureSet['liveness'],
                                  featureSet['speechiness'],
-                                 featureSet['valence'], 0])
+                                 featureSet['valence'], 1])
 
         for featureSet in negativeAudioFeatures:
             dataWriter.writerow([featureSet['acousticness'],
@@ -162,7 +162,7 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
                                  featureSet['instrumentalness'],
                                  featureSet['liveness'],
                                  featureSet['speechiness'],
-                                 featureSet['valence'], 1])
+                                 featureSet['valence'], 0])
 
         print("Data successfully written to csv file")
 
