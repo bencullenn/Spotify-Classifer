@@ -9,7 +9,9 @@ import spotipy.util as util
 import pprint
 import csv
 
-
+'''
+Functions
+'''
 def getUsername():
     if len(sys.argv) > 1:
         # Ask the user for their username
@@ -36,98 +38,97 @@ def getPlaylistForID(playlistID):
     # Retrieve the playlist data in JSON format
     return sp.user_playlist(username, playlistID)
 
-# Define the scope of what you would like to access from the user
-scope = 'user-read-private user-read-email'
+def getTracksFromPlaylist(playlistID):
+    # Retrieve the playlist data in JSON format
+    playlist = getPlaylistForID(playlistID)
 
-# The ID's for a few of our playlists are included here
-largeDataSetExamplePlaylist = "0Y6fI3iYSYSfZY1B7X3tvU"
-hipHopTrainingSetPlaylist = "6KNC0KnNsw7hJUGwlr1hCO"
+    # Create two list objects, one to store all of JSON data for the tracks in the playlist
+    # and another to store the uri link data for audio feature processing
+    tracks = []
 
-# Set the playlistID to the playlist that you want to use
-playlistID = hipHopTrainingSetPlaylist
+    # Get the total number of tracks in the playlist and create a variable to manage the offset value
+    playlistNumOfTracks = playlist['tracks']['total']
+    offset = 0
 
-# Create username and Token objects
-username = getUsername()
-token = createTokenForScope(scope=scope, username=username)
+    # While the tracks list contains less than the number of tracks
+    # in the playlist add chunks of 100 songs at a time to the tracks playlist
+    while len(tracks) < playlistNumOfTracks:
+        linkListSubset = sp.user_playlist_tracks(username, playlistID, fields='items', offset=offset)['items']
+        for track in linkListSubset:
+            tracks.append(track)
+        offset += 1
+        print("{}{}".format("Length of playlist:", playlistNumOfTracks))
+        print("{}{}".format("Current amount of tracks retrieved:", len(tracks)))
+        print("{}{}".format("Offset Value:", offset))
+    return tracks
 
-# Create a spotipy objects
-sp = spotipy.Spotify(auth=token)
 
-# Retrieve the playlist data in JSON format
-playlist = getPlaylistForID(playlistID)
+def getAudioFeaturesForPlaylistID(playlistID):
+    tracks = getTracksFromPlaylist(playlistID)
+    links = []
 
-# Create two list objects, one to store all of JSON data for the tracks in the playlist
-# and another to store the uri link data for audio feature processing
-tracks = []
-links = []
+    for track in tracks:
+        links.append(track['track']['uri'])
 
-# Get the total number of tracks in the playlist and create a variable to manage the offset value
-playlistNumOfTracks = playlist['tracks']['total']
-offset = 0
+    # Create variables to store the beginning and end indies to enable getting subsets of results
+    startIndex = 0
+    endIndex = 100
+    audioFeatures = []
 
-# While the tracks list contains less than the number of tracks
-# in the playlist add chunks of 100 songs at a time to the tracks playlist
-while len(tracks) < playlistNumOfTracks:
-    linkListSubset = sp.user_playlist_tracks(username, playlistID, fields='items', offset=offset)['items']
-    for track in linkListSubset:
-        tracks.append(track)
-    offset += 1
-    print("{}{}".format("Length of playlist:", playlistNumOfTracks))
-    print("{}{}".format("Current amount of tracks retrieved:", len(tracks)))
-    print("{}{}".format("Offset Value:", offset))
+    # While the amount of audio feature data is less than the amount of links
+    while len(audioFeatures) < len(links):
 
-# Print out playlist name
-print playlist['name']
-print"___________________________\n"
+        # Adjust the end index to be at max the size of the list of links to avoid an index out of bounds error
+        if len(links) < endIndex:
+            endIndex = len(links)
+            print("{}{}".format("End index updated to:", endIndex))
 
-# Print out the name, artist, album, and link for each song in the playlist and add uri data to links array
-for track in tracks:
-    print track['track']['name']
-    print track['track']['artists'][0]['name']
-    print track['track']['album']['name']
-    print track['track']['external_urls']['spotify']
-    links.append(track['track']['uri'])
-    print "\n"
+        # Create a temporary list
+        linkListSubset = []
 
-# Create variables to store the beginning and end indies to enable getting subsets of results
-startIndex = 0
-endIndex = 100
-audioFeatures = []
+        # For the range of indexes remove the links from the link list and add them to the temp list
+        for index in range(startIndex, endIndex):
+            linkListSubset.append(links[index])
 
-# While the amount of audio feature data is less than the amount of links
-while len(audioFeatures) < len(links):
+        # Retrieve the audio features for the subset of the links
+        audioFeaturesRawData = sp.audio_features(linkListSubset)
 
-    # Adjust the end index to be at max the size of the list of links to avoid an index out of bounds error
-    if len(links) < endIndex:
-        endIndex = len(links)
-        print("{}{}".format("End index updated to:", endIndex))
+        # Add the raw data for each track to the audio features list
+        for item in audioFeaturesRawData:
+            audioFeatures.append(item)
 
-    # Create a temporary list
-    linkListSubset = []
+        # Change the indices to include the next 100 songs
+        startIndex = endIndex
+        endIndex += 100
 
-    # For the range of indexes remove the links from the link list and add them to the temp list
-    for index in range(startIndex, endIndex):
-        linkListSubset.append(links[index])
+        # Print some information to know what's happening
+        print("{}{}".format("Amount of links and audio features are the same:", len(audioFeatures) == len(links)))
+        print("{}{}".format("Amount of Audio Features:", len(audioFeatures)))
+        print("{}{}".format("Amount of links:", len(links)))
+        print("{}{}".format("Start Index:", startIndex))
+        print("{}{}".format("End Index:", endIndex))
+        print "\n"
 
-    # Retrieve the audio features for the subset of the links
-    audioFeaturesRawData = sp.audio_features(linkListSubset)
+    return audioFeatures
 
-    # Add the raw data for each track to the audio features list
-    for item in audioFeaturesRawData:
-        audioFeatures.append(item)
 
-    # Change the indices to include the next 100 songs
-    startIndex = endIndex
-    endIndex += 100
+def displayPlaylist(playlistID):
+    tracks = getTracksFromPlaylist(playlistID)
+    playlist = getPlaylistForID(playlistID)
 
-    # Print some information to know what's happening
-    print("{}{}".format("Amount of links and audio features are the same:", len(audioFeatures) == len(links)))
-    print("{}{}".format("Amount of Audio Features:", len(audioFeatures)))
-    print("{}{}".format("Amount of links:", len(links)))
-    print("{}{}".format("Start Index:", startIndex))
-    print("{}{}".format("End Index:", endIndex))
-    print "\n"
+    # Print out playlist name
+    print playlist['name']
+    print"___________________________\n"
 
+    # Print out the name, artist, album, and link for each song in the playlist and add uri data to links array
+    for track in tracks:
+        print track['track']['name']
+        print track['track']['artists'][0]['name']
+        print track['track']['album']['name']
+        print track['track']['external_urls']['spotify']
+        print "\n"
+
+def writeAudioFeaturesToCSVFile(audioFeatures):
     # Create a new csv file
     with open('data.csv', 'wb') as csvfile:
         # Create a writer for the csv file
@@ -153,3 +154,23 @@ while len(audioFeatures) < len(links):
                                  featureSet['valence']])
 
         print("Data successfully written to csv file")
+
+"""
+Variable Declarations
+"""
+# Define the scope of what you would like to access from the user
+scope = 'user-read-private user-read-email'
+# The ID's for a few of our playlists are included here
+largeDataSetExamplePlaylist = "0Y6fI3iYSYSfZY1B7X3tvU"
+hipHopTrainingSetPlaylist = "6KNC0KnNsw7hJUGwlr1hCO"
+# Set the playlistID to the playlist that you want to use
+playlistID = largeDataSetExamplePlaylist
+# Create username and Token objects
+username = getUsername()
+token = createTokenForScope(scope=scope, username=username)
+# Create a spotipy objects
+sp = spotipy.Spotify(auth=token)
+# Retrieve the playlist data in JSON format
+playlist = getPlaylistForID(playlistID)
+
+writeAudioFeaturesToCSVFile(getAudioFeaturesForPlaylistID(playlistID))
