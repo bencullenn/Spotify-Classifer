@@ -145,24 +145,44 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
                              'Valence',
                              'Label'])
 
-        # For each track write certain attributes to the csv file
-        for featureSet in positiveAudioFeatures:
-            dataWriter.writerow([featureSet['acousticness'],
-                                 featureSet['danceability'],
-                                 featureSet['energy'],
-                                 featureSet['instrumentalness'],
-                                 featureSet['liveness'],
-                                 featureSet['speechiness'],
-                                 featureSet['valence'], 1])
+        # Create variables for tracking indices
+        negExampleIndex = 0
+        postiveExampleIndex = 0
 
-        for featureSet in negativeAudioFeatures:
-            dataWriter.writerow([featureSet['acousticness'],
-                                 featureSet['danceability'],
-                                 featureSet['energy'],
-                                 featureSet['instrumentalness'],
-                                 featureSet['liveness'],
-                                 featureSet['speechiness'],
-                                 featureSet['valence'], 0])
+        # Get size of datasets
+        postiveExampleSize = len(positiveAudioFeatures)
+        negativeExamplesSize = len(negativeAudioFeatures)
+
+        # While at least one of the datasets has more data to write
+        while negExampleIndex < negativeExamplesSize or postiveExampleIndex < postiveExampleSize:
+
+            # If there are more positive data examples
+            if postiveExampleIndex < postiveExampleSize:
+
+                # Write certain data to the csv file
+                dataWriter.writerow([positiveAudioFeatures[postiveExampleIndex]['acousticness'],
+                                     positiveAudioFeatures[postiveExampleIndex]['danceability'],
+                                     positiveAudioFeatures[postiveExampleIndex]['energy'],
+                                     positiveAudioFeatures[postiveExampleIndex]['instrumentalness'],
+                                     positiveAudioFeatures[postiveExampleIndex]['liveness'],
+                                     positiveAudioFeatures[postiveExampleIndex]['speechiness'],
+                                     positiveAudioFeatures[postiveExampleIndex]['valence'], "In"])
+
+            # If there are more negative data examples
+            if negExampleIndex < negativeExamplesSize:
+
+                # Write certain data to the csv file
+                dataWriter.writerow([negativeAudioFeatures[negExampleIndex]['acousticness'],
+                                     negativeAudioFeatures[negExampleIndex]['danceability'],
+                                     negativeAudioFeatures[negExampleIndex]['energy'],
+                                     negativeAudioFeatures[negExampleIndex]['instrumentalness'],
+                                     negativeAudioFeatures[negExampleIndex]['liveness'],
+                                     negativeAudioFeatures[negExampleIndex]['speechiness'],
+                                     negativeAudioFeatures[negExampleIndex]['valence'], "Out"])
+
+            # Update the indices
+            postiveExampleIndex += 1
+            negExampleIndex += 1
 
         print("Data successfully written to csv file")
 
