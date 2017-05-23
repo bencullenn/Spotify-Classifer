@@ -154,7 +154,7 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
         negativeExamplesSize = len(negativeAudioFeatures)
 
 
-        # If there are more positive data examples
+        # While there are more positive data examples
         while postiveExampleIndex < postiveExampleSize:
 
             dataWriter.writerow([positiveAudioFeatures[postiveExampleIndex]['acousticness'],
@@ -166,7 +166,7 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
                                      positiveAudioFeatures[postiveExampleIndex]['valence'], "In"])
             postiveExampleIndex += 1
 
-        # If there are more negative data examples
+        # While there are more negative data examples
         while negExampleIndex < negativeExamplesSize:
 
             # Write certain data to the csv file
@@ -178,6 +178,7 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
                                      negativeAudioFeatures[negExampleIndex]['speechiness'],
                                      negativeAudioFeatures[negExampleIndex]['valence'], "Out"])
             negExampleIndex += 1
+
         print("Data successfully written to csv file")
 
 """
