@@ -22,7 +22,7 @@ def getUsername():
         sys.exit()
 
 
-def createTokenForScope(username,scope):
+def createTokenForScope(username, scope):
     # Get token for user
     token = util.prompt_for_user_token(username, scope)
 
@@ -193,7 +193,7 @@ Variable Declarations
 scope = 'user-read-private user-read-email'
 
 # Get the ID's for the playlists of your postive and negative examples
-negativeExamplesPlaylistID = "0Y6fI3iYSYSfZY1B7X3tvU"
+negativeExamplesPlaylistID = "7A3R53gbIQ2XDsxUJJBqcU"
 positiveExamplesPlaylistID = "6KNC0KnNsw7hJUGwlr1hCO"
 
 # Create username and Token objects
@@ -203,6 +203,7 @@ token = createTokenForScope(scope=scope, username=username)
 # Create a Spotipy object
 sp = spotipy.Spotify(auth=token)
 
+#
 positiveExamplesData = getAudioFeaturesForPlaylistID(positiveExamplesPlaylistID)
 negativeExamplesData = getAudioFeaturesForPlaylistID(negativeExamplesPlaylistID)
 
