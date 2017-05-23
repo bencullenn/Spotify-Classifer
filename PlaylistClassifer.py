@@ -21,7 +21,6 @@ def createTestSet(dataSet, testSetProportion):
     testSetFeatures = np.empty(6, dtype=float)
     testSetLabels = np.empty(1, dtype=str)
 
-
     for i, row in dataSet.iterrows():  # i: dataframe index; row: each row in series format
 
         rowData = row.values
@@ -31,12 +30,16 @@ def createTestSet(dataSet, testSetProportion):
         rowLabel = np.append(rowLabel, rowData[7])
 
         if i % 10 == 0:
-            np.append(testSetFeatures, rowFeatures, axis=0)
-            np.append(testSetLabels, rowLabel, axis=0)
+            print ("{}{}".format("Features added to Test Set", rowFeatures))
+            testSetFeatures = np.append(testSetFeatures, rowFeatures, axis=0)
+            print ("{}{}".format("Label added to Test Set:", rowLabel))
+            testSetLabels = np.append(testSetLabels, rowLabel, axis=0)
             
         else:
-            np.append(trainSetFeatures, rowFeatures, axis=0)
-            np.append(trainSetLabels, rowLabel, axis=0)
+            print ("{}{}".format("Features added to Train Set", rowFeatures))
+            trainSetFeatures = np.append(trainSetFeatures, rowFeatures, axis=0)
+            print ("{}{}".format("Label added to Test Set:", rowLabel))
+            trainSetLabels = np.append(trainSetLabels, rowLabel, axis=0)
 
     print ("{}{}".format("DataSet Size:", len(dataSet)))
     print ("{}{}".format("TestSetLabels Size:", len(testSetLabels)))
@@ -52,16 +55,15 @@ testFeatures, testLabels, trainFeatures, trainLabels = createTestSet(data, .10)
 
 
 print "Train Features"
-pprint.pprint(trainFeatures)
+print(trainFeatures)
 
 print "Train Labels"
-pprint.pprint(trainLabels)
-
+print(trainLabels)
 
 print "Test Features"
-pprint.pprint(testFeatures)
+print(testFeatures)
 
 print "Test Labels"
-pprint.pprint(testLabels)
+print(testLabels)
 
 
