@@ -158,12 +158,12 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
         while postiveExampleIndex < postiveExampleSize:
 
             dataWriter.writerow([positiveAudioFeatures[postiveExampleIndex]['acousticness'],
-                                     positiveAudioFeatures[postiveExampleIndex]['danceability'],
-                                     positiveAudioFeatures[postiveExampleIndex]['energy'],
-                                     positiveAudioFeatures[postiveExampleIndex]['instrumentalness'],
-                                     positiveAudioFeatures[postiveExampleIndex]['liveness'],
-                                     positiveAudioFeatures[postiveExampleIndex]['speechiness'],
-                                     positiveAudioFeatures[postiveExampleIndex]['valence'], "In"])
+                                 positiveAudioFeatures[postiveExampleIndex]['danceability'],
+                                 positiveAudioFeatures[postiveExampleIndex]['energy'],
+                                 positiveAudioFeatures[postiveExampleIndex]['instrumentalness'],
+                                 positiveAudioFeatures[postiveExampleIndex]['liveness'],
+                                 positiveAudioFeatures[postiveExampleIndex]['speechiness'],
+                                 positiveAudioFeatures[postiveExampleIndex]['valence'], "In"])
             postiveExampleIndex += 1
 
         # While there are more negative data examples
@@ -171,18 +171,18 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
 
             # Write certain data to the csv file
             dataWriter.writerow([negativeAudioFeatures[negExampleIndex]['acousticness'],
-                                     negativeAudioFeatures[negExampleIndex]['danceability'],
-                                     negativeAudioFeatures[negExampleIndex]['energy'],
-                                     negativeAudioFeatures[negExampleIndex]['instrumentalness'],
-                                     negativeAudioFeatures[negExampleIndex]['liveness'],
-                                     negativeAudioFeatures[negExampleIndex]['speechiness'],
-                                     negativeAudioFeatures[negExampleIndex]['valence'], "Out"])
+                                 negativeAudioFeatures[negExampleIndex]['danceability'],
+                                 negativeAudioFeatures[negExampleIndex]['energy'],
+                                 negativeAudioFeatures[negExampleIndex]['instrumentalness'],
+                                 negativeAudioFeatures[negExampleIndex]['liveness'],
+                                 negativeAudioFeatures[negExampleIndex]['speechiness'],
+                                 negativeAudioFeatures[negExampleIndex]['valence'], "Out"])
             negExampleIndex += 1
 
         print("Data successfully written to csv file")
 
 """
-Variable Declarations
+Main Code
 """
 # Define the scope of what you would like to access from the user
 scope = 'user-read-private user-read-email'
