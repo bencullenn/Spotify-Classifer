@@ -15,11 +15,11 @@ import pprint
 def createTestSet(dataSet, testSetProportion):
     testSize = int(len(dataSet)*testSetProportion)
     trainSize = int(len(dataSet) * (1-testSetProportion))
-    trainSetFeatures = np.empty(6, dtype=float)
-    trainSetLabels = np.empty(1, dtype=str)
+    trainSetFeatures = np.empty((0,6), dtype=float)
+    trainSetLabels = np.empty((0,1), dtype=str)
 
-    testSetFeatures = np.empty(6, dtype=float)
-    testSetLabels = np.empty(1, dtype=str)
+    testSetFeatures = np.empty((0,6), dtype=float)
+    testSetLabels = np.empty((0,1), dtype=str)
 
     for i, row in dataSet.iterrows():  # i: dataframe index; row: each row in series format
 
@@ -31,15 +31,15 @@ def createTestSet(dataSet, testSetProportion):
 
         if i % 10 == 0:
             print ("{}{}".format("Features added to Test Set", rowFeatures))
-            testSetFeatures = np.append(testSetFeatures, rowFeatures, axis=0)
+            testSetFeatures = np.append(testSetFeatures, [rowFeatures], axis=0)
             print ("{}{}".format("Label added to Test Set:", rowLabel))
-            testSetLabels = np.append(testSetLabels, rowLabel, axis=0)
+            testSetLabels = np.append(testSetLabels, [rowLabel], axis=0)
             
         else:
             print ("{}{}".format("Features added to Train Set", rowFeatures))
-            trainSetFeatures = np.append(trainSetFeatures, rowFeatures, axis=0)
-            print ("{}{}".format("Label added to Test Set:", rowLabel))
-            trainSetLabels = np.append(trainSetLabels, rowLabel, axis=0)
+            trainSetFeatures = np.append(trainSetFeatures, [rowFeatures], axis=0)
+            print ("{}{}".format("Label added to Train Set:", rowLabel))
+            trainSetLabels = np.append(trainSetLabels, [rowLabel], axis=0)
 
     print ("{}{}".format("DataSet Size:", len(dataSet)))
     print ("{}{}".format("TestSetLabels Size:", len(testSetLabels)))
@@ -65,5 +65,4 @@ print(testFeatures)
 
 print "Test Labels"
 print(testLabels)
-
 
