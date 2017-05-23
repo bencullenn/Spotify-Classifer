@@ -11,9 +11,10 @@ import numpy as np
 import random
 import sklearn
 import pprint
+from time import time
 from sklearn import preprocessing
 from sklearn import svm
-
+from sklearn.metrics import accuracy_score
 """
 Functions
 """
@@ -67,8 +68,52 @@ def createTestSet(dataSet, testSetProportion):
     print "\n"
     return testSetFeatures, testSetLabels, trainSetFeatures, trainSetLabels
 
+
+def trainClassifer(classifier, trainFeatures, trainLabels):
+    # Set variables
+    clf = classifier
+    le = preprocessing.LabelEncoder()
+
+    # Normalize labels by converting label data from type string to type int
+    trainLabelsData = le.fit_transform(trainLabels)
+    print "Labels Transformed\n"
+
+    # Save current time to variable
+    start = time()
+
+    # Train algorithm with data
+    clf.fit(trainFeatures, trainLabelsData)
+    print "Trained Classifier\n"
+
+    # Calculate how long it took to train algorithm
+    print "Runtime:", round(time() - start, 3), "s"
+
+    # Return trained classifier
+    return classifier
+
+
+def testClassifer(classifier, testFeatures, testLabels):
+    # Set Variables
+    clf = classifier
+    le = preprocessing.LabelEncoder()
+
+    # Fit label encoder so that it can turn labels back into text
+    le.fit(testLabels)
+
+    # Use the classifier to predict labels for the test data
+    predictedLabelData = clf.predict(testFeatures)
+
+    # Convert the predicted labels back into text so they can be compared
+    predictedLabelText = le.inverse_transform(predictedLabelData)
+
+    print "Classifier Predictions:", predictedLabelText, "\n"
+
+    # Calculate the accuracy of the algortihm by comparing the predicted labels to the actual labels
+    print "Classifier Accuracy Score", accuracy_score(predictedLabelText, testLabels), "\n"
+
+
 """
-Code
+Main Method
 """
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
 
@@ -91,23 +136,11 @@ print "Test Labels"
 print(testLabels)
 print "\n"
 
-# Normalize labels
+# Create a classifier
+clfSVM = svm.SVC()
 
-le = preprocessing.LabelEncoder()
+# Train the algorithm
+clfSVM = trainClassifer(classifier=clfSVM, trainFeatures=trainFeatures, trainLabels=trainLabels)
 
-trainLabels = le.fit_transform(trainLabels)
-print "Labels Transformed\n"
-
-# Time to train some Classifers
-
-svmClf = svm.SVC()
-
-svmClf.fit(trainFeatures, trainLabels)
-print "Support Vector Machine Trained\n"
-
-# Calculate Accuracy
-
-svmPredictionData = svmClf.predict(testFeatures)
-svmPredictions = le.inverse_transform(svmPredictionData)
-
-print "{}{}".format("SVM Predictions", svmPredictions)
+# Test the algorithm using the test data and find the accuracy
+testClassifer(classifier=clfSVM, testFeatures=testFeatures, testLabels=testLabels)
