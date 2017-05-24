@@ -142,6 +142,7 @@ topAccuracyDecTree = 0.00000
 
 
 while counter <= amountOfTests:
+    print "Test Number ", counter
     testFeatures, testLabels, trainFeatures, trainLabels = createTestSet(data, .10)
 
     """
