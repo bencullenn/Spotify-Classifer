@@ -79,14 +79,14 @@ def trainClassifer(classifier, trainFeatures, trainLabels):
 
     # Normalize labels by converting label data from type string to type int
     trainLabelsData = le.fit_transform(trainLabels)
-    print "Labels Transformed\n"
+    print "Labels Transformed"
 
     # Save current time to variable
     start = time()
 
     # Train algorithm with data
     clf.fit(trainFeatures, trainLabelsData)
-    print "Trained Classifier\n"
+    print "Trained Classifier"
 
     # Calculate how long it took to train algorithm
     print "Runtime:", round(time() - start, 3), "s"
@@ -109,11 +109,10 @@ def testClassifer(classifier, testFeatures, testLabels):
     # Convert the predicted labels back into text so they can be compared
     predictedLabelText = le.inverse_transform(predictedLabelData)
 
-    print "Classifier Predictions:", predictedLabelText, "\n"
+    print "Classifier Predictions:", predictedLabelText, ""
 
     # Calculate the accuracy of the algortihm by comparing the predicted labels to the actual labels
     print "Classifier Accuracy Score", accuracy_score(predictedLabelText, testLabels), "\n"
-
 
 """
 Main Method
@@ -121,47 +120,51 @@ Main Method
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
 
 
-testFeatures, testLabels, trainFeatures, trainLabels = createTestSet(data, .10)
+counter = 0
+while counter <= 10:
+    testFeatures, testLabels, trainFeatures, trainLabels = createTestSet(data, .10)
 
-"""
-print "Train Features"
-print(trainFeatures)
-print "\n"
+    """
+    print "Train Features"
+    print(trainFeatures)
+    print "\n"
 
-print "Train Labels"
-print(trainLabels)
-print "\n"
+    print "Train Labels"
+    print(trainLabels)
+    print "\n"
 
-print "Test Features"
-print(testFeatures)
-print "\n"
+    print "Test Features"
+    print(testFeatures)
+    print "\n"
 
-print "Test Labels"
-print(testLabels)
-print "\n"
-"""
+    print "Test Labels"
+    print(testLabels)
+    print "\n"
+    """
 
-# Create a classifier
-print "Testing the Support Vector Machine Classifier"
-clfSVM = svm.SVC()
+    # Create a classifier
+    print "Testing the Support Vector Machine Classifier"
+    clfSVM = svm.SVC()
 
-# Train the algorithm
-clfSVM = trainClassifer(classifier=clfSVM, trainFeatures=trainFeatures, trainLabels=trainLabels)
+    # Train the algorithm
+    clfSVM = trainClassifer(classifier=clfSVM, trainFeatures=trainFeatures, trainLabels=trainLabels)
 
-# Test the algorithm using the test data and find the accuracy
-testClassifer(classifier=clfSVM, testFeatures=testFeatures, testLabels=testLabels)
+    # Test the algorithm using the test data and find the accuracy
+    testClassifer(classifier=clfSVM, testFeatures=testFeatures, testLabels=testLabels)
 
-print "Testing Stochastic Gradient Decent Classifier"
-clfSGD = SGDClassifier()
-clfSGD = trainClassifer(classifier=clfSGD, trainFeatures=trainFeatures, trainLabels=trainLabels)
-testClassifer(classifier=clfSGD, testFeatures=testFeatures, testLabels=testLabels)
+    print "Testing Stochastic Gradient Decent Classifier"
+    clfSGD = SGDClassifier()
+    clfSGD = trainClassifer(classifier=clfSGD, trainFeatures=trainFeatures, trainLabels=trainLabels)
+    testClassifer(classifier=clfSGD, testFeatures=testFeatures, testLabels=testLabels)
 
-print "Testing Naive Bayes Classifier"
-clfNaiveBayes = GaussianNB()
-clfNaiveBayes = trainClassifer(classifier=clfNaiveBayes, trainFeatures=trainFeatures, trainLabels=trainLabels)
-testClassifer(classifier=clfNaiveBayes, testFeatures=testFeatures, testLabels=testLabels)
+    print "Testing Naive Bayes Classifier"
+    clfNaiveBayes = GaussianNB()
+    clfNaiveBayes = trainClassifer(classifier=clfNaiveBayes, trainFeatures=trainFeatures, trainLabels=trainLabels)
+    testClassifer(classifier=clfNaiveBayes, testFeatures=testFeatures, testLabels=testLabels)
 
-print "Testing Decision Tree Classifier"
-clfDecisionTree = tree.DecisionTreeClassifier()
-clfDecisionTree = trainClassifer(classifier=clfDecisionTree, trainFeatures=trainFeatures, trainLabels=trainLabels)
-testClassifer(classifier=clfDecisionTree, testFeatures=testFeatures, testLabels=testLabels)
+    print "Testing Decision Tree Classifier"
+    clfDecisionTree = tree.DecisionTreeClassifier()
+    clfDecisionTree = trainClassifer(classifier=clfDecisionTree, trainFeatures=trainFeatures, trainLabels=trainLabels)
+    testClassifer(classifier=clfDecisionTree, testFeatures=testFeatures, testLabels=testLabels)
+
+    counter += 1
