@@ -120,9 +120,10 @@ Main Method
 """
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
 
+
 testFeatures, testLabels, trainFeatures, trainLabels = createTestSet(data, .10)
 
-
+"""
 print "Train Features"
 print(trainFeatures)
 print "\n"
@@ -138,7 +139,7 @@ print "\n"
 print "Test Labels"
 print(testLabels)
 print "\n"
-
+"""
 
 # Create a classifier
 print "Testing the Support Vector Machine Classifier"
