@@ -12,6 +12,8 @@ import csv
 '''
 Functions
 '''
+
+
 def getUsername():
     if len(sys.argv) > 1:
         # Ask the user for their username
@@ -189,7 +191,7 @@ scope = 'user-read-private user-read-email'
 
 # Get the ID's for the playlists of your postive and negative examples
 negativeExamplesPlaylistID = "7A3R53gbIQ2XDsxUJJBqcU"
-positiveExamplesPlaylistID = "6KNC0KnNsw7hJUGwlr1hCO"
+positiveExamplesPlaylistID = "4uqYnwUWiX1znXsAdVtTD2"
 
 # Create username and Token objects
 username = getUsername()

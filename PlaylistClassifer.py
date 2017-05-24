@@ -13,8 +13,11 @@ import sklearn
 import pprint
 from time import time
 from sklearn import preprocessing
-from sklearn import svm
 from sklearn.metrics import accuracy_score
+from sklearn import svm
+from sklearn.linear_model import SGDClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn import tree
 """
 Functions
 """
@@ -136,7 +139,9 @@ print "Test Labels"
 print(testLabels)
 print "\n"
 
+
 # Create a classifier
+print "Testing the Support Vector Machine Classifier"
 clfSVM = svm.SVC()
 
 # Train the algorithm
@@ -144,3 +149,18 @@ clfSVM = trainClassifer(classifier=clfSVM, trainFeatures=trainFeatures, trainLab
 
 # Test the algorithm using the test data and find the accuracy
 testClassifer(classifier=clfSVM, testFeatures=testFeatures, testLabels=testLabels)
+
+print "Testing Stochastic Gradient Decent Classifier"
+clfSGD = SGDClassifier()
+clfSGD = trainClassifer(classifier=clfSGD, trainFeatures=trainFeatures, trainLabels=trainLabels)
+testClassifer(classifier=clfSGD, testFeatures=testFeatures, testLabels=testLabels)
+
+print "Testing Naive Bayes Classifier"
+clfNaiveBayes = GaussianNB()
+clfNaiveBayes = trainClassifer(classifier=clfNaiveBayes, trainFeatures=trainFeatures, trainLabels=trainLabels)
+testClassifer(classifier=clfNaiveBayes, testFeatures=testFeatures, testLabels=testLabels)
+
+print "Testing Decision Tree Classifier"
+clfDecisionTree = tree.DecisionTreeClassifier()
+clfDecisionTree = trainClassifer(classifier=clfDecisionTree, trainFeatures=trainFeatures, trainLabels=trainLabels)
+testClassifer(classifier=clfDecisionTree, testFeatures=testFeatures, testLabels=testLabels)
