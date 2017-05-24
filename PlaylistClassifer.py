@@ -15,9 +15,12 @@ from sklearn import svm
 from sklearn.linear_model import SGDClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
+
 """
 Functions
 """
+
+
 def createTestSet(dataSet, testSetProportion):
 
     testSize = int(len(dataSet)*testSetProportion)
@@ -158,6 +161,7 @@ while counter <= amountOfTests:
     print(testLabels)
     print "\n"
     """
+
     # Create variables to store the test session values
     sessionRuntimeSVM = 100.00000
     sessionAccuracySVM = 100.00000
@@ -219,18 +223,18 @@ while counter <= amountOfTests:
 
     counter += 1
 
-print "Testing the Support Vector Machine Classifier"
+print "Support Vector Machine Classifier Results"
 print "Best Runtime", bestRuntimeSVM
 print "Top Accuracy", topAccuracySVM
 
-print "Testing Stochastic Gradient Decent Classifier"
+print "Stochastic Gradient Decent Classifier Results"
 print "Best Runtime", bestRuntimeSDG
 print "Top Accuracy", topAccuracySDG
 
-print "Testing Naive Bayes Classifier"
+print "Naive Bayes Classifier Results"
 print "Best Runtime", bestRuntimeNaiveBayes
 print "Top Accuracy", topAccuracyNaiveBayes
 
-print "Testing Decision Tree Classifier"
+print "Decision Tree Classifier Results"
 print "Best Runtime", bestRuntimeDecTree
 print "Top Accuracy", topAccuracyDecTree
