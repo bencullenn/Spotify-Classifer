@@ -170,7 +170,6 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
 
         # While there are more negative data examples
         while negExampleIndex < negativeExamplesSize:
-
             # Write certain data to the csv file
             dataWriter.writerow([negativeAudioFeatures[negExampleIndex]['acousticness'],
                                  negativeAudioFeatures[negExampleIndex]['danceability'],
@@ -179,19 +178,21 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
                                  negativeAudioFeatures[negExampleIndex]['liveness'],
                                  negativeAudioFeatures[negExampleIndex]['speechiness'],
                                  negativeAudioFeatures[negExampleIndex]['valence'], "Out"])
+
             negExampleIndex += 1
 
         print("Data successfully written to csv file")
+
 
 """
 Main Code
 """
 # Define the scope of what you would like to access from the user
-scope = 'user-read-private user-read-email'
+scope = 'user-read-private user-read-email playlist-modify-private playlist-modify-public'
 
-# Get the ID's for the playlists of your postive and negative examples
-negativeExamplesPlaylistID = "7A3R53gbIQ2XDsxUJJBqcU"
-positiveExamplesPlaylistID = "4uqYnwUWiX1znXsAdVtTD2"
+# Get the ID's for the playlists of your positive and negative examples
+negativeExamplesPlaylistID = "1dLo2dKFXuuOoi5FGdVnsp"
+positiveExamplesPlaylistID = "73K1o9klE5p2rNOPpOueNn"
 
 # Create username and Token objects
 username = getUsername()
