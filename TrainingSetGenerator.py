@@ -12,6 +12,8 @@ import csv
 '''
 Functions
 '''
+
+
 def getUsername():
     if len(sys.argv) > 1:
         # Ask the user for their username
@@ -153,48 +155,44 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
         postiveExampleSize = len(positiveAudioFeatures)
         negativeExamplesSize = len(negativeAudioFeatures)
 
-        # While at least one of the datasets has more data to write
-        while negExampleIndex < negativeExamplesSize or postiveExampleIndex < postiveExampleSize:
 
-            # If there are more positive data examples
-            if postiveExampleIndex < postiveExampleSize:
+        # While there are more positive data examples
+        while postiveExampleIndex < postiveExampleSize:
 
-                # Write certain data to the csv file
-                dataWriter.writerow([positiveAudioFeatures[postiveExampleIndex]['acousticness'],
-                                     positiveAudioFeatures[postiveExampleIndex]['danceability'],
-                                     positiveAudioFeatures[postiveExampleIndex]['energy'],
-                                     positiveAudioFeatures[postiveExampleIndex]['instrumentalness'],
-                                     positiveAudioFeatures[postiveExampleIndex]['liveness'],
-                                     positiveAudioFeatures[postiveExampleIndex]['speechiness'],
-                                     positiveAudioFeatures[postiveExampleIndex]['valence'], "In"])
-
-            # If there are more negative data examples
-            if negExampleIndex < negativeExamplesSize:
-
-                # Write certain data to the csv file
-                dataWriter.writerow([negativeAudioFeatures[negExampleIndex]['acousticness'],
-                                     negativeAudioFeatures[negExampleIndex]['danceability'],
-                                     negativeAudioFeatures[negExampleIndex]['energy'],
-                                     negativeAudioFeatures[negExampleIndex]['instrumentalness'],
-                                     negativeAudioFeatures[negExampleIndex]['liveness'],
-                                     negativeAudioFeatures[negExampleIndex]['speechiness'],
-                                     negativeAudioFeatures[negExampleIndex]['valence'], "Out"])
-
-            # Update the indices
+            dataWriter.writerow([positiveAudioFeatures[postiveExampleIndex]['acousticness'],
+                                 positiveAudioFeatures[postiveExampleIndex]['danceability'],
+                                 positiveAudioFeatures[postiveExampleIndex]['energy'],
+                                 positiveAudioFeatures[postiveExampleIndex]['instrumentalness'],
+                                 positiveAudioFeatures[postiveExampleIndex]['liveness'],
+                                 positiveAudioFeatures[postiveExampleIndex]['speechiness'],
+                                 positiveAudioFeatures[postiveExampleIndex]['valence'], "In"])
             postiveExampleIndex += 1
+
+        # While there are more negative data examples
+        while negExampleIndex < negativeExamplesSize:
+            # Write certain data to the csv file
+            dataWriter.writerow([negativeAudioFeatures[negExampleIndex]['acousticness'],
+                                 negativeAudioFeatures[negExampleIndex]['danceability'],
+                                 negativeAudioFeatures[negExampleIndex]['energy'],
+                                 negativeAudioFeatures[negExampleIndex]['instrumentalness'],
+                                 negativeAudioFeatures[negExampleIndex]['liveness'],
+                                 negativeAudioFeatures[negExampleIndex]['speechiness'],
+                                 negativeAudioFeatures[negExampleIndex]['valence'], "Out"])
+
             negExampleIndex += 1
 
         print("Data successfully written to csv file")
 
+
 """
-Variable Declarations
+Main Code
 """
 # Define the scope of what you would like to access from the user
-scope = 'user-read-private user-read-email'
+scope = 'user-read-private user-read-email playlist-modify-private playlist-modify-public'
 
-# Get the ID's for the playlists of your postive and negative examples
-negativeExamplesPlaylistID = "7A3R53gbIQ2XDsxUJJBqcU"
-positiveExamplesPlaylistID = "6KNC0KnNsw7hJUGwlr1hCO"
+# Get the ID's for the playlists of your positive and negative examples
+negativeExamplesPlaylistID = "1dLo2dKFXuuOoi5FGdVnsp"
+positiveExamplesPlaylistID = "73K1o9klE5p2rNOPpOueNn"
 
 # Create username and Token objects
 username = getUsername()
