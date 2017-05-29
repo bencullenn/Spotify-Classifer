@@ -139,19 +139,6 @@ def testClassifers(amountOfTests, data):
         print "Test Number ", counter
         testFeatures, testLabels, trainFeatures, trainLabels = createTestSet(data, .10)
 
-        # Create variables to store the test session values
-        sessionRuntimeSVM = 100.00000
-        sessionAccuracySVM = 100.00000
-
-        sessionRuntimeSGD = 100.00000
-        sessionAccuracySGD = 100.00000
-
-        sessionRuntimeNaiveBayes = 100.00000
-        sessionAccuracyNaiveBayes = 100.00000
-
-        sessionRuntimeDecTree = 100.00000
-        sessionAccuracyDecTree = 100.00000
-
         # Create a classifier
         print "Testing the Support Vector Machine Classifier"
         clfSVM = svm.SVC()
@@ -238,7 +225,6 @@ def testClassifers(amountOfTests, data):
         mostAccurateClassifier = topAccuracyDecTree
 
     return mostAccurateClassifier
-
 
 """
 Main Method
