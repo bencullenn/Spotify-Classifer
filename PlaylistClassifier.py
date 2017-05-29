@@ -118,124 +118,131 @@ def testClassifer(classifier, testFeatures, testLabels):
     return accuracy
 
 
+def testClassifers(amountOfTests, data):
+    # Create counter variable for loop
+    counter = 1
+
+    # Create variables to store the best values from testing
+    bestRuntimeSVM = 100.00000
+    topAccuracySVM = 0.00000
+
+    bestRuntimeSGD = 100.00000
+    topAccuracySGD = 0.00000
+
+    bestRuntimeNaiveBayes = 100.00000
+    topAccuracyNaiveBayes = 0.00000
+
+    bestRuntimeDecTree = 100.00000
+    topAccuracyDecTree = 0.00000
+
+    while counter <= amountOfTests:
+        print "Test Number ", counter
+        testFeatures, testLabels, trainFeatures, trainLabels = createTestSet(data, .10)
+
+        # Create variables to store the test session values
+        sessionRuntimeSVM = 100.00000
+        sessionAccuracySVM = 100.00000
+
+        sessionRuntimeSGD = 100.00000
+        sessionAccuracySGD = 100.00000
+
+        sessionRuntimeNaiveBayes = 100.00000
+        sessionAccuracyNaiveBayes = 100.00000
+
+        sessionRuntimeDecTree = 100.00000
+        sessionAccuracyDecTree = 100.00000
+
+        # Create a classifier
+        print "Testing the Support Vector Machine Classifier"
+        clfSVM = svm.SVC()
+
+        # Train the algorithm
+        clfSVM, sessionRuntimeSVM = trainClassifer(classifier=clfSVM, trainFeatures=trainFeatures,
+                                                   trainLabels=trainLabels)
+
+        # Test the algorithm using the test data and find the accuracy
+        sessionAccuracySVM = testClassifer(classifier=clfSVM, testFeatures=testFeatures, testLabels=testLabels)
+
+        print "Testing Stochastic Gradient Decent Classifier"
+        clfSGD = SGDClassifier()
+        clfSGD, sessionRuntimeSGD = trainClassifer(classifier=clfSGD, trainFeatures=trainFeatures,
+                                                   trainLabels=trainLabels)
+        sessionAccuracySGD = testClassifer(classifier=clfSGD, testFeatures=testFeatures, testLabels=testLabels)
+
+        print "Testing Naive Bayes Classifier"
+        clfNaiveBayes = GaussianNB()
+        clfNaiveBayes, sessionRuntimeNaiveBayes = trainClassifer(classifier=clfNaiveBayes, trainFeatures=trainFeatures,
+                                                                 trainLabels=trainLabels)
+        sessionAccuracyNaiveBayes = testClassifer(classifier=clfNaiveBayes, testFeatures=testFeatures,
+                                                  testLabels=testLabels)
+
+        print "Testing Decision Tree Classifier"
+        clfDecisionTree = tree.DecisionTreeClassifier()
+        clfDecisionTree, sessionRuntimeDecTree = trainClassifer(classifier=clfDecisionTree, trainFeatures=trainFeatures,
+                                                                trainLabels=trainLabels)
+        sessionAccuracyDecTree = testClassifer(classifier=clfDecisionTree, testFeatures=testFeatures,
+                                               testLabels=testLabels)
+
+        # If any of the session values are better than the best value update the best value
+        if sessionRuntimeSVM < bestRuntimeSVM:
+            bestRuntimeSVM = sessionRuntimeSVM
+        if sessionAccuracySVM > topAccuracySVM:
+            topAccuracySVM = sessionAccuracySVM
+
+        if sessionRuntimeSGD < bestRuntimeSGD:
+            bestRuntimeSGD = sessionRuntimeSGD
+        if sessionAccuracySGD > topAccuracySGD:
+            topAccuracySGD = sessionAccuracySGD
+
+        if sessionRuntimeNaiveBayes < bestRuntimeNaiveBayes:
+            bestRuntimeNaiveBayes = sessionRuntimeNaiveBayes
+        if sessionAccuracyNaiveBayes > topAccuracyNaiveBayes:
+            topAccuracyNaiveBayes = sessionAccuracyNaiveBayes
+
+        if sessionRuntimeDecTree < bestRuntimeDecTree:
+            bestRuntimeDecTree = sessionRuntimeDecTree
+        if sessionAccuracyDecTree > topAccuracyDecTree:
+            topAccuracyDecTree = sessionAccuracyDecTree
+
+        counter += 1
+
+    print "Support Vector Machine Classifier Results"
+    print "Best Runtime", bestRuntimeSVM
+    print "Top Accuracy", topAccuracySVM
+
+    print "Stochastic Gradient Decent Classifier Results"
+    print "Best Runtime", bestRuntimeSGD
+    print "Top Accuracy", topAccuracySGD
+
+    print "Naive Bayes Classifier Results"
+    print "Best Runtime", bestRuntimeNaiveBayes
+    print "Top Accuracy", topAccuracyNaiveBayes
+
+    print "Decision Tree Classifier Results"
+    print "Best Runtime", bestRuntimeDecTree
+    print "Top Accuracy", topAccuracyDecTree
+
+    topClassiferAccuracy = topAccuracySVM
+    mostAccurateClassifier = clfSVM
+
+    if (topAccuracySGD > topClassiferAccuracy):
+        topClassiferAccuracy = topAccuracySGD
+        mostAccurateClassifier = clfSGD
+
+    if (topAccuracyNaiveBayes > topClassiferAccuracy):
+        topClassiferAccuracy = topAccuracyNaiveBayes
+        mostAccurateClassifier = clfNaiveBayes
+
+    if (topClassiferAccuracy > topAccuracyDecTree):
+        topClassiferAccuracy = topAccuracyDecTree
+        mostAccurateClassifier = topAccuracyDecTree
+
+    return mostAccurateClassifier
+
+
 """
 Main Method
 """
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
+mostAccurateClassifier = testClassifers(amountOfTests=5, data=data)
 
-# Create counter variable for loop
-counter = 1
-amountOfTests = 5
-
-# Create variables to store the best values from testing
-bestRuntimeSVM = 100.00000
-topAccuracySVM = 0.00000
-
-bestRuntimeSDG = 100.00000
-topAccuracySDG = 0.00000
-
-bestRuntimeNaiveBayes = 100.00000
-topAccuracyNaiveBayes = 0.00000
-
-bestRuntimeDecTree = 100.00000
-topAccuracyDecTree = 0.00000
-
-
-while counter <= amountOfTests:
-    print "Test Number ", counter
-    testFeatures, testLabels, trainFeatures, trainLabels = createTestSet(data, .10)
-
-    """
-    print "Train Features"
-    print(trainFeatures)
-    print "\n"
-
-    print "Train Labels"
-    print(trainLabels)
-    print "\n"
-
-    print "Test Features"
-    print(testFeatures)
-    print "\n"
-
-    print "Test Labels"
-    print(testLabels)
-    print "\n"
-    """
-
-    # Create variables to store the test session values
-    sessionRuntimeSVM = 100.00000
-    sessionAccuracySVM = 100.00000
-
-    sessionRuntimeSDG = 100.00000
-    sessionAccuracySDG = 100.00000
-
-    sessionRuntimeNaiveBayes = 100.00000
-    sessionAccuracyNaiveBayes = 100.00000
-
-    sessionRuntimeDecTree = 100.00000
-    sessionAccuracyDecTree = 100.00000
-
-    # Create a classifier
-    print "Testing the Support Vector Machine Classifier"
-    clfSVM = svm.SVC()
-
-    # Train the algorithm
-    clfSVM, sessionRuntimeSVM = trainClassifer(classifier=clfSVM, trainFeatures=trainFeatures, trainLabels=trainLabels)
-
-    # Test the algorithm using the test data and find the accuracy
-    sessionAccuracySVM = testClassifer(classifier=clfSVM, testFeatures=testFeatures, testLabels=testLabels)
-
-    print "Testing Stochastic Gradient Decent Classifier"
-    clfSGD = SGDClassifier()
-    clfSGD, sessionRuntimeSDG = trainClassifer(classifier=clfSGD, trainFeatures=trainFeatures, trainLabels=trainLabels)
-    sessionAccuracySDG = testClassifer(classifier=clfSGD, testFeatures=testFeatures, testLabels=testLabels)
-
-    print "Testing Naive Bayes Classifier"
-    clfNaiveBayes = GaussianNB()
-    clfNaiveBayes, sessionRuntimeNaiveBayes = trainClassifer(classifier=clfNaiveBayes, trainFeatures=trainFeatures, trainLabels=trainLabels)
-    sessionAccuracyNaiveBayes = testClassifer(classifier=clfNaiveBayes, testFeatures=testFeatures, testLabels=testLabels)
-
-    print "Testing Decision Tree Classifier"
-    clfDecisionTree = tree.DecisionTreeClassifier()
-    clfDecisionTree, sessionRuntimeDecTree = trainClassifer(classifier=clfDecisionTree, trainFeatures=trainFeatures, trainLabels=trainLabels)
-    sessionAccuracyDecTree = testClassifer(classifier=clfDecisionTree, testFeatures=testFeatures, testLabels=testLabels)
-
-    # If any of the session values are better than the best value update the best value
-    if sessionRuntimeSVM < bestRuntimeSVM:
-        bestRuntimeSVM = sessionRuntimeSVM
-    if sessionAccuracySVM > topAccuracySVM:
-        topAccuracySVM = sessionAccuracySVM
-
-    if sessionRuntimeSDG < bestRuntimeSDG:
-        bestRuntimeSDG = sessionRuntimeSDG
-    if sessionAccuracySDG > topAccuracySDG:
-        topAccuracySDG = sessionAccuracySDG
-
-    if sessionRuntimeNaiveBayes < bestRuntimeNaiveBayes:
-        bestRuntimeNaiveBayes = sessionRuntimeNaiveBayes
-    if sessionAccuracyNaiveBayes > topAccuracyNaiveBayes:
-        topAccuracyNaiveBayes = sessionAccuracyNaiveBayes
-
-    if sessionRuntimeDecTree < bestRuntimeDecTree:
-        bestRuntimeDecTree = sessionRuntimeDecTree
-    if sessionAccuracyDecTree > topAccuracyDecTree:
-        topAccuracyDecTree = sessionAccuracyDecTree
-
-    counter += 1
-
-print "Support Vector Machine Classifier Results"
-print "Best Runtime", bestRuntimeSVM
-print "Top Accuracy", topAccuracySVM
-
-print "Stochastic Gradient Decent Classifier Results"
-print "Best Runtime", bestRuntimeSDG
-print "Top Accuracy", topAccuracySDG
-
-print "Naive Bayes Classifier Results"
-print "Best Runtime", bestRuntimeNaiveBayes
-print "Top Accuracy", topAccuracyNaiveBayes
-
-print "Decision Tree Classifier Results"
-print "Best Runtime", bestRuntimeDecTree
-print "Top Accuracy", topAccuracyDecTree
