@@ -189,13 +189,6 @@ def parsePlaylistLink(playlistLink):
     creatorUsername = ""
     playlistID = ""
 
-    # Sample Links
-    # Spotify Playlist
-    "https://open.spotify.com/user/spotify/playlist/37i9dQZF1DXcBWIGoYBM5M"
-    # User Playlist
-    "https://open.spotify.com/user/1228575772/playlist/1dLo2dKFXuuOoi5FGdVnsp"
-    # Track
-    "https://open.spotify.com/track/4MUyxhxNFRViaJzJYQoYqE"
     linkInfo = playlistLink[25:]
 
     print "Link info:", linkInfo

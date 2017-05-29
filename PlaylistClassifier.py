@@ -226,9 +226,29 @@ def testClassifers(amountOfTests, data):
 
     return mostAccurateClassifier
 
+def parseTrackLink(trackLink):
+    isLinkValad = False
+    trackID = ""
+
+    linkInfo = trackLink[25:]
+    print "Link info:", linkInfo
+
+    if linkInfo[:5] == "track":
+        isLinkValad = True
+        print "Link belongs to a track"
+        trackID = linkInfo[6:]
+
+        print "Track ID:", trackID
+    else:
+        print "Link does not belong to a track"
+
+    return isLinkValad, trackID
+
 """
 Main Method
 """
+
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
 mostAccurateClassifier = testClassifers(amountOfTests=5, data=data)
 
+isTrackLinkValad, trackID = parseTrackLink("https://open.spotify.com/track/4MUyxhxNFRViaJzJYQoYqE")
