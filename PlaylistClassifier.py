@@ -18,6 +18,7 @@ from sklearn import tree
 import sys
 import spotipy
 import spotipy.util as util
+import pprint
 
 """
 Functions
@@ -286,3 +287,7 @@ token = createTokenForScope(scope=scope, username=authorizationUsername)
 # Create a Spotipy object
 sp = spotipy.Spotify(auth=token)
 
+trackData = sp.track(trackID)
+pprint.pprint(trackData)
+trackAudioFeatures = sp.audio_features([trackID])
+pprint.pprint(trackAudioFeatures)
