@@ -8,6 +8,7 @@ import spotipy
 import spotipy.util as util
 import pprint
 import csv
+import time
 
 '''
 Functions
@@ -37,11 +38,17 @@ def createTokenForScope(username, scope):
 
 
 def getPlaylistForID(playlistID):
+    # Create a Spotipy object
+    sp = spotipy.Spotify(auth=token)
+
     # Retrieve the playlist data in JSON format
     return sp.user_playlist(username, playlistID)
 
 
 def getTracksFromPlaylist(playlistID):
+    # Create a Spotipy object
+    sp = spotipy.Spotify(auth=token)
+
     # Retrieve the playlist data in JSON format
     playlist = getPlaylistForID(playlistID)
 
@@ -69,6 +76,9 @@ def getTracksFromPlaylist(playlistID):
 def getAudioFeaturesForPlaylistID(playlistID):
     tracks = getTracksFromPlaylist(playlistID)
     links = []
+
+    # Create a Spotipy object
+    sp = spotipy.Spotify(auth=token)
 
     for track in tracks:
         links.append(track['track']['uri'])
@@ -184,6 +194,52 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
         print("Data successfully written to csv file")
 
 
+def removeDuplicates(postiveExamplesPlaylistID, negativeExamplesExamplesPlaylistID):
+
+    sp = spotipy.Spotify(auth=token)
+    postiveExamples = getTracksFromPlaylist(positiveExamplesPlaylistID)
+    negativeExamples = getTracksFromPlaylist(negativeExamplesPlaylistID)
+    tracksToRemove = []
+
+    # For each track in the positive examples playlist check
+    #  if the track exists in the negative examples playlist.
+    for posTrack in postiveExamples:
+        for negTrack in negativeExamples:
+            if posTrack['track']['uri'] == negTrack['track']['uri'] and\
+                            tracksToRemove.__contains__(posTrack['track']['uri']) is False:
+                # If track is in both playlists add it to the tracks to remove playlist
+                tracksToRemove.append(posTrack['track']['uri'])
+
+    # Print out songs to remove
+    print "Attempting to remove ", len(tracksToRemove), " tracks"
+
+    print "Tracks to Remove"
+    if len(tracksToRemove) < 1:
+        print "There are no tracks to remove"
+    else:
+        for track in tracksToRemove:
+            print sp.track(track)['name']
+        sp.user_playlist_remove_all_occurrences_of_tracks(user=username,
+                                                          playlist_id=negativeExamplesPlaylistID,
+                                                          tracks=tracksToRemove)
+    print "Allowing Changes to Update"
+    for value in range(0, 30):
+        print value, " seconds left"
+        time.sleep(1)
+    print "\n"
+    print "All Duplicates Removed"
+
+    print "Positive Examples Playlist"
+    for posTrack in postiveExamples:
+        print posTrack['track']['name']
+
+    print "\n"
+
+    print "Negative Examples Playlist"
+    for negTrack in negativeExamples:
+        print negTrack['track']['name']
+
+    print "\n"
 """
 Main Code
 """
@@ -198,11 +254,10 @@ positiveExamplesPlaylistID = "73K1o9klE5p2rNOPpOueNn"
 username = getUsername()
 token = createTokenForScope(scope=scope, username=username)
 
-# Create a Spotipy object
-sp = spotipy.Spotify(auth=token)
+removeDuplicates(positiveExamplesPlaylistID, negativeExamplesPlaylistID)
 
-#
 positiveExamplesData = getAudioFeaturesForPlaylistID(positiveExamplesPlaylistID)
 negativeExamplesData = getAudioFeaturesForPlaylistID(negativeExamplesPlaylistID)
 
-writeAudioFeaturesToCSVFile(positiveAudioFeatures=positiveExamplesData, negativeAudioFeatures=negativeExamplesData)
+writeAudioFeaturesToCSVFile(positiveAudioFeatures=positiveExamplesData,
+                            negativeAudioFeatures=negativeExamplesData)
