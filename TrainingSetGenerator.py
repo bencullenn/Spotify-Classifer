@@ -230,8 +230,8 @@ Main Code
 scope = 'user-read-private user-read-email playlist-modify-private playlist-modify-public'
 
 # Get the ID's for the playlists of your positive and negative examples
-positiveExamplesPlaylistLink = "https://open.spotify.com/user/1228575772/playlist/73K1o9klE5p2rNOPpOueNn"
-negativeExamplesPlaylistLink = "https://open.spotify.com/user/1228575772/playlist/1dLo2dKFXuuOoi5FGdVnsp"
+positiveExamplesPlaylistLink = "https://open.spotify.com/user/1228575772/playlist/3yizPHVVdByKDDman4yw4N"
+negativeExamplesPlaylistLink = "https://open.spotify.com/user/1228575772/playlist/36ez66SGOm2QAjPilCcd5m"
 
 
 # Create username and Token objects
