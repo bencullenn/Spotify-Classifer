@@ -15,6 +15,9 @@ from sklearn import svm
 from sklearn.linear_model import SGDClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
+import sys
+import spotipy
+import spotipy.util as util
 
 """
 Functions
@@ -244,11 +247,42 @@ def parseTrackLink(trackLink):
 
     return isLinkValad, trackID
 
+def getUsername():
+    if len(sys.argv) > 1:
+        # Ask the user for their username
+        return sys.argv[1]
+    else:
+        # If username cannot be found then throw an error
+        print "Usage: %s username" % (sys.argv[0],)
+        sys.exit()
+
+
+def createTokenForScope(username, scope):
+    # Get token for user
+    token = util.prompt_for_user_token(username, scope)
+
+    # If given valid username token
+    if token:
+        print ("Token Successfully Generated")
+        return token
+    else:
+        print "Can't get token for", username
+
+
 """
 Main Method
 """
 
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
-mostAccurateClassifier = testClassifers(amountOfTests=5, data=data)
+# mostAccurateClassifier = testClassifers(amountOfTests=5, data=data)
 
 isTrackLinkValad, trackID = parseTrackLink("https://open.spotify.com/track/4MUyxhxNFRViaJzJYQoYqE")
+
+scope = 'user-read-private user-read-email playlist-modify-private playlist-modify-public'
+# Create username and Token objects
+authorizationUsername = getUsername()
+token = createTokenForScope(scope=scope, username=authorizationUsername)
+
+# Create a Spotipy object
+sp = spotipy.Spotify(auth=token)
+
