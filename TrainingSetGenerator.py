@@ -38,7 +38,7 @@ def createTokenForScope(username, scope):
 
 def getPlaylistForID(playlistID):
     # Retrieve the playlist data in JSON format
-    return sp.user_playlist(username, playlistID)
+    return sp.user_playlist(authorizationUsername, playlistID)
 
 
 def getTracksFromPlaylist(playlistID):
@@ -56,7 +56,7 @@ def getTracksFromPlaylist(playlistID):
     # While the tracks list contains less than the number of tracks
     # in the playlist add chunks of 100 songs at a time to the tracks playlist
     while len(tracks) < playlistNumOfTracks:
-        linkListSubset = sp.user_playlist_tracks(username, playlistID, fields='items', offset=offset)['items']
+        linkListSubset = sp.user_playlist_tracks(authorizationUsername, playlistID, fields='items', offset=offset)['items']
         for track in linkListSubset:
             tracks.append(track)
         offset += 1
@@ -184,6 +184,45 @@ def writeAudioFeaturesToCSVFile(positiveAudioFeatures,negativeAudioFeatures):
         print("Data successfully written to csv file")
 
 
+def parsePlaylistLink(playlistLink):
+    isPlaylist = False
+    creatorUsername = ""
+    playlistID = ""
+
+    # Sample Links
+    # Spotify Playlist
+    "https://open.spotify.com/user/spotify/playlist/37i9dQZF1DXcBWIGoYBM5M"
+    # User Playlist
+    "https://open.spotify.com/user/1228575772/playlist/1dLo2dKFXuuOoi5FGdVnsp"
+    # Track
+    "https://open.spotify.com/track/4MUyxhxNFRViaJzJYQoYqE"
+    linkInfo = playlistLink[25:]
+
+    print "Link info:", linkInfo
+
+    if linkInfo[:4] == "user":
+        isPlaylist = True
+        print "Link belongs to a playlist"
+        linkInfo = linkInfo[5:]
+    else:
+        print "Link does not belong to a playlist"
+
+    if isPlaylist:
+            for character in linkInfo:
+                if character is not "/":
+                    creatorUsername += character
+                else:
+                    break
+            print "Username:", creatorUsername
+
+            linkInfo = linkInfo[len(creatorUsername)+10:]
+
+            print "Link info without username:", linkInfo
+            playlistID = linkInfo
+            print "\n"
+    return isPlaylist, creatorUsername, playlistID
+
+
 """
 Main Code
 """
@@ -191,18 +230,27 @@ Main Code
 scope = 'user-read-private user-read-email playlist-modify-private playlist-modify-public'
 
 # Get the ID's for the playlists of your positive and negative examples
-negativeExamplesPlaylistID = "1dLo2dKFXuuOoi5FGdVnsp"
-positiveExamplesPlaylistID = "73K1o9klE5p2rNOPpOueNn"
+positiveExamplesPlaylistLink = "https://open.spotify.com/user/1228575772/playlist/73K1o9klE5p2rNOPpOueNn"
+negativeExamplesPlaylistLink = "https://open.spotify.com/user/1228575772/playlist/1dLo2dKFXuuOoi5FGdVnsp"
+
 
 # Create username and Token objects
-username = getUsername()
-token = createTokenForScope(scope=scope, username=username)
+authorizationUsername = getUsername()
+token = createTokenForScope(scope=scope, username=authorizationUsername)
 
 # Create a Spotipy object
 sp = spotipy.Spotify(auth=token)
 
-#
-positiveExamplesData = getAudioFeaturesForPlaylistID(positiveExamplesPlaylistID)
-negativeExamplesData = getAudioFeaturesForPlaylistID(negativeExamplesPlaylistID)
+isPosPlaylistLinkValid, posPlaylistUsername, posPlaylistID = parsePlaylistLink(positiveExamplesPlaylistLink)
+isNegPlaylistLinkValid, negPlaylistUsername, negPlaylistID = parsePlaylistLink(negativeExamplesPlaylistLink)
 
-writeAudioFeaturesToCSVFile(positiveAudioFeatures=positiveExamplesData, negativeAudioFeatures=negativeExamplesData)
+if isPosPlaylistLinkValid:
+    if isNegPlaylistLinkValid:
+        positiveExamplesData = getAudioFeaturesForPlaylistID(posPlaylistID)
+        negativeExamplesData = getAudioFeaturesForPlaylistID(negPlaylistID)
+        writeAudioFeaturesToCSVFile(positiveAudioFeatures=positiveExamplesData,
+                                    negativeAudioFeatures=negativeExamplesData)
+    else:
+        print "Negative playlist link is not valid"
+else:
+    print "Positive playlist link is not valid"
