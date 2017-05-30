@@ -297,7 +297,7 @@ def create_token_for_scope(username, scope):
 
 def predict_track_using_data(track_link, data):
     label_encoder = create_label_encoder(data)
-    most_accurate_classifier = test_classifiers(amount_of_tests=5, data=data)
+    most_accurate_classifier = test_classifiers(amount_of_tests=1, data=data)
 
     is_track_link_valid, track_id = parse_track_link(track_link)
 
@@ -335,6 +335,7 @@ def predict_track_using_data(track_link, data):
 Main Method
 """
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
-track_link = "https://open.spotify.com/track/4MUyxhxNFRViaJzJYQoYqE"
+print "Please copy and paste the link to the track you would like to predict:"
+track_link = raw_input()
 
 predict_track_using_data(track_link=track_link, data=data)
