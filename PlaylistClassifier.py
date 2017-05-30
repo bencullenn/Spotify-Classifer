@@ -293,6 +293,7 @@ trackData = sp.track(trackID)
 trackAudioFeatures = sp.audio_features([trackID])[0]
 
 trackFeatures = np.empty((0, 7), dtype=float)
+print trackFeatures
 trackFeatures = np.append(trackFeatures, [trackAudioFeatures['acousticness']])
 trackFeatures = np.append(trackFeatures, [trackAudioFeatures['danceability']])
 trackFeatures = np.append(trackFeatures, [trackAudioFeatures['energy']])
@@ -300,6 +301,8 @@ trackFeatures = np.append(trackFeatures, [trackAudioFeatures['instrumentalness']
 trackFeatures = np.append(trackFeatures, [trackAudioFeatures['liveness']])
 trackFeatures = np.append(trackFeatures, [trackAudioFeatures['speechiness']])
 trackFeatures = np.append(trackFeatures, [trackAudioFeatures['valence']])
+trackFeatures = np.reshape(trackFeatures, (1, -1))
+print trackFeatures
 
 prediction = mostAccurateClassifier.predict(trackFeatures)
 
