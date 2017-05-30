@@ -126,7 +126,7 @@ def test_classifier(classifier, testing_features, testing_labels):
     predicted_label_text = le.inverse_transform(predicted_label_data)
     print "Classifier Predictions:", predicted_label_text, ""
 
-    # Calculate the accuracy of the algortihm by comparing the predicted labels to the actual labels
+    # Calculate the accuracy of the algorithm by comparing the predicted labels to the actual labels
     accuracy = accuracy_score(predicted_label_text, testing_labels)
     print "Classifier Accuracy Score", accuracy, "\n"
 
