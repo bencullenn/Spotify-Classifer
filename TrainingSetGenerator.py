@@ -219,7 +219,7 @@ def parse_playlist_link(playlist_link):
 Main Code
 """
 # Define the scope of what you would like to access from the user
-scope = 'user-read-private user-read-email playlist-modify-private playlist-modify-public'
+scope = 'user-read-private user-read-email'
 
 # Get the ID's for the playlists of your positive and negative examples
 print"Please input the link to your playlist of positive examples:"
