@@ -25,7 +25,6 @@ from sklearn import tree
 Functions
 """
 
-
 def create_test_set(data_set, test_set_proportion):
 
     test_size = int(len(data_set) * test_set_proportion)
@@ -54,17 +53,13 @@ def create_test_set(data_set, test_set_proportion):
         if i % 10 == 0:
 
             # Take the row features and label and add it to the test set
-            # print ("{}{}".format("Features added to Test Set", row_features))
             test_set_features = np.append(test_set_features, [row_features], axis=0)
-            # print ("{}{}".format("Label added to Test Set:", row_label))
             test_set_labels = np.append(test_set_labels, [row_label])
             
         else:
 
             # Take the row features and label and add it to the training set
-            # print ("{}{}".format("Features added to Train Set", row_features))
             train_set_features = np.append(train_set_features, [row_features], axis=0)
-            # print ("{}{}".format("Label added to Train Set:", row_label))
             train_set_labels = np.append(train_set_labels, [row_label])
 
     # Print out some data to verify that the training and test sets are proper size
@@ -239,7 +234,7 @@ def test_classifiers(amount_of_tests, data):
     print "Decision Tree Classifier Results"
     print "Best Runtime", best_runtime_dec_tree
     print "Top Accuracy", top_accuracy_dec_tree
-
+    print "\n"
     top_classifier_accuracy = top_accuracy_svm
     most_accurate_classifier = clf_svm
 
@@ -252,7 +247,6 @@ def test_classifiers(amount_of_tests, data):
         most_accurate_classifier = clf_naive_bayes
 
     if top_classifier_accuracy > top_accuracy_dec_tree:
-        top_classifier_accuracy = top_accuracy_dec_tree
         most_accurate_classifier = top_accuracy_dec_tree
 
     return most_accurate_classifier
@@ -261,12 +255,15 @@ def parse_track_link(track_link):
     is_link_valid = False
     track_id = ""
 
+    # Create a substring by removing the first 25 characters in the string
     link_info = track_link[25:]
     print "Link info:", link_info
 
+    # If the link of a track link
     if link_info[:5] == "track":
         is_link_valid = True
         print "Link belongs to a track"
+        # Save the track id to the track id variable
         track_id = link_info[6:]
 
         print "Track ID:", track_id
@@ -298,12 +295,11 @@ def create_token_for_scope(username, scope):
         print "Can't get token for", username
 
 
-def predict_track():
-    data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
+def predict_track_using_data(track_link, data):
     label_encoder = create_label_encoder(data)
-    most_accurate_classifier = test_classifiers(amount_of_tests=1, data=data)
+    most_accurate_classifier = test_classifiers(amount_of_tests=5, data=data)
 
-    is_track_link_valid, track_id = parse_track_link("https://open.spotify.com/track/4MUyxhxNFRViaJzJYQoYqE")
+    is_track_link_valid, track_id = parse_track_link(track_link)
 
     scope = 'user-read-private user-read-email playlist-modify-private playlist-modify-public'
 
@@ -338,5 +334,7 @@ def predict_track():
 """
 Main Method
 """
+data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
+track_link = "https://open.spotify.com/track/4MUyxhxNFRViaJzJYQoYqE"
 
-predict_track()
+predict_track_using_data(track_link=track_link, data=data)
