@@ -222,8 +222,10 @@ Main Code
 scope = 'user-read-private user-read-email playlist-modify-private playlist-modify-public'
 
 # Get the ID's for the playlists of your positive and negative examples
-positive_examples_playlist_link = "https://open.spotify.com/user/1228575772/playlist/3yizPHVVdByKDDman4yw4N"
-negative_examples_playlist_link = "https://open.spotify.com/user/1228575772/playlist/36ez66SGOm2QAjPilCcd5m"
+print"Please input the link to your playlist of positive examples:"
+positive_examples_playlist_link = raw_input()
+print"Please input the link to your playlist of negative examples:"
+negative_examples_playlist_link = raw_input()
 
 
 # Create username and Token objects
