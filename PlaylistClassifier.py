@@ -31,10 +31,10 @@ def createTestSet(dataSet, testSetProportion):
     trainSize = int(len(dataSet) * (1-testSetProportion))
 
     # Create 2D arrays to store test and training sets
-    trainSetFeatures = np.empty((0, 6), dtype=float)
+    trainSetFeatures = np.empty((0, 7), dtype=float)
     trainSetLabels = np.empty((0, 1), dtype=str)
 
-    testSetFeatures = np.empty((0, 6), dtype=float)
+    testSetFeatures = np.empty((0, 7), dtype=float)
     testSetLabels = np.empty((0, 1), dtype=str)
 
     for i, row in dataSet.iterrows():  # i: dataframe index; row: each row in series format
@@ -43,7 +43,7 @@ def createTestSet(dataSet, testSetProportion):
         rowData = row.values
 
         # Extract feature data into an array
-        rowFeatures = rowData[1:7]
+        rowFeatures = rowData[0:7]
 
         # Extract the label and insert it into an array
         rowLabel = np.empty((0, 1), dtype=str)
@@ -73,6 +73,7 @@ def createTestSet(dataSet, testSetProportion):
     print ("{}{}".format("TrainSetLabels Size:", len(trainSetLabels)))
     print ("{}{}".format("TrainSetFeatures Size:", len(trainSetFeatures)))
     print "\n"
+    pprint.pprint(trainSetFeatures)
     return testSetFeatures, testSetLabels, trainSetFeatures, trainSetLabels
 
 
@@ -275,11 +276,12 @@ Main Method
 """
 
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
-# mostAccurateClassifier = testClassifers(amountOfTests=5, data=data)
+mostAccurateClassifier = testClassifers(amountOfTests=1, data=data)
 
 isTrackLinkValad, trackID = parseTrackLink("https://open.spotify.com/track/4MUyxhxNFRViaJzJYQoYqE")
 
 scope = 'user-read-private user-read-email playlist-modify-private playlist-modify-public'
+
 # Create username and Token objects
 authorizationUsername = getUsername()
 token = createTokenForScope(scope=scope, username=authorizationUsername)
@@ -288,6 +290,17 @@ token = createTokenForScope(scope=scope, username=authorizationUsername)
 sp = spotipy.Spotify(auth=token)
 
 trackData = sp.track(trackID)
-pprint.pprint(trackData)
-trackAudioFeatures = sp.audio_features([trackID])
-pprint.pprint(trackAudioFeatures)
+trackAudioFeatures = sp.audio_features([trackID])[0]
+
+trackFeatures = np.empty((0, 7), dtype=float)
+trackFeatures = np.append(trackFeatures, [trackAudioFeatures['acousticness']])
+trackFeatures = np.append(trackFeatures, [trackAudioFeatures['danceability']])
+trackFeatures = np.append(trackFeatures, [trackAudioFeatures['energy']])
+trackFeatures = np.append(trackFeatures, [trackAudioFeatures['instrumentalness']])
+trackFeatures = np.append(trackFeatures, [trackAudioFeatures['liveness']])
+trackFeatures = np.append(trackFeatures, [trackAudioFeatures['speechiness']])
+trackFeatures = np.append(trackFeatures, [trackAudioFeatures['valence']])
+
+prediction = mostAccurateClassifier.predict(trackFeatures)
+
+print prediction
