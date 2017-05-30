@@ -100,12 +100,27 @@ def trainClassifer(classifier, trainFeatures, trainLabels):
     return classifier, runtime
 
 
+def create_label_encoder(data):
+    datasetLabels = np.empty((0, 1), dtype=str)
+    le = preprocessing.LabelEncoder()
+    for i, row in data.iterrows():
+        # Convert the row data into an array
+        rowData = row.values
+
+        # Extract the label and insert it into an array
+        rowLabel = np.empty((0, 1), dtype=str)
+        rowLabel = np.append(rowLabel, rowData[7])
+
+        datasetLabels = np.append(datasetLabels, [rowLabel])
+    # Fit label encoder so that it can turn labels back into text
+    le.fit(datasetLabels)
+    return le
+
+
 def testClassifer(classifier, testFeatures, testLabels):
     # Set Variables
     clf = classifier
     le = preprocessing.LabelEncoder()
-
-    # Fit label encoder so that it can turn labels back into text
     le.fit(testLabels)
 
     # Use the classifier to predict labels for the test data
@@ -271,39 +286,45 @@ def createTokenForScope(username, scope):
         print "Can't get token for", username
 
 
+def predictTrack():
+    data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
+    labelEncoder = create_label_encoder(data)
+    mostAccurateClassifier = testClassifers(amountOfTests=1, data=data)
+
+    isTrackLinkValiad, trackID = parseTrackLink("https://open.spotify.com/track/4MUyxhxNFRViaJzJYQoYqE")
+
+    scope = 'user-read-private user-read-email playlist-modify-private playlist-modify-public'
+
+    # Create username and Token objects
+    authorizationUsername = getUsername()
+    token = createTokenForScope(scope=scope, username=authorizationUsername)
+
+    # Create a Spotipy object
+    sp = spotipy.Spotify(auth=token)
+
+    trackData = sp.track(trackID)
+    print "Track Name:", trackData['name']
+    print "Artist:", trackData['artists'][0]['name']
+    print "Album:", trackData['album']['name']
+    trackAudioFeatures = sp.audio_features([trackID])[0]
+
+    trackFeatures = np.empty((0, 7), dtype=float)
+    trackFeatures = np.append(trackFeatures, [trackAudioFeatures['acousticness']])
+    trackFeatures = np.append(trackFeatures, [trackAudioFeatures['danceability']])
+    trackFeatures = np.append(trackFeatures, [trackAudioFeatures['energy']])
+    trackFeatures = np.append(trackFeatures, [trackAudioFeatures['instrumentalness']])
+    trackFeatures = np.append(trackFeatures, [trackAudioFeatures['liveness']])
+    trackFeatures = np.append(trackFeatures, [trackAudioFeatures['speechiness']])
+    trackFeatures = np.append(trackFeatures, [trackAudioFeatures['valence']])
+    trackFeatures = np.reshape(trackFeatures, (1, -1))
+
+    prediction = mostAccurateClassifier.predict(trackFeatures)
+
+    prediction = labelEncoder.inverse_transform(prediction)
+    print prediction
+
 """
 Main Method
 """
 
-data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
-mostAccurateClassifier = testClassifers(amountOfTests=1, data=data)
-
-isTrackLinkValad, trackID = parseTrackLink("https://open.spotify.com/track/4MUyxhxNFRViaJzJYQoYqE")
-
-scope = 'user-read-private user-read-email playlist-modify-private playlist-modify-public'
-
-# Create username and Token objects
-authorizationUsername = getUsername()
-token = createTokenForScope(scope=scope, username=authorizationUsername)
-
-# Create a Spotipy object
-sp = spotipy.Spotify(auth=token)
-
-trackData = sp.track(trackID)
-trackAudioFeatures = sp.audio_features([trackID])[0]
-
-trackFeatures = np.empty((0, 7), dtype=float)
-print trackFeatures
-trackFeatures = np.append(trackFeatures, [trackAudioFeatures['acousticness']])
-trackFeatures = np.append(trackFeatures, [trackAudioFeatures['danceability']])
-trackFeatures = np.append(trackFeatures, [trackAudioFeatures['energy']])
-trackFeatures = np.append(trackFeatures, [trackAudioFeatures['instrumentalness']])
-trackFeatures = np.append(trackFeatures, [trackAudioFeatures['liveness']])
-trackFeatures = np.append(trackFeatures, [trackAudioFeatures['speechiness']])
-trackFeatures = np.append(trackFeatures, [trackAudioFeatures['valence']])
-trackFeatures = np.reshape(trackFeatures, (1, -1))
-print trackFeatures
-
-prediction = mostAccurateClassifier.predict(trackFeatures)
-
-print prediction
+predictTrack()
