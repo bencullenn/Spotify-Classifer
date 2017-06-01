@@ -70,10 +70,11 @@ def get_audio_features_for_playlist_id(playlist_id):
     tracks = get_tracks_from_playlist(playlist_id)
     links = []
 
+    #link is not actual url, but string of numbers that corresponds to track.
     for track in tracks:
         links.append(track['track']['uri'])
 
-    # Create variables to store the beginning and end indies to enable getting subsets of results
+    # Create variables to store the beginning and end indices to enable getting subsets of results
     start_index = 0
     end_index = 100
     audio_features = []

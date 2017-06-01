@@ -25,12 +25,15 @@ from sklearn import tree
 Functions
 """
 
+#need to randomize creating test set so it's not the same each time. Use shufflesplit
+#print out
 def create_test_set(data_set, test_set_proportion):
 
     test_size = int(len(data_set) * test_set_proportion)
     train_size = int(len(data_set) * (1 - test_set_proportion))
 
-    # Create 2D arrays to store test and training sets
+    # Create 2D arrays to store test and training sets.
+    # features array stores characteristics like acousticness and labels stores whether it is "in" or "out" of the positive examples playlist
     train_set_features = np.empty((0, 7), dtype=float)
     train_set_labels = np.empty((0, 1), dtype=str)
 
@@ -126,7 +129,7 @@ def test_classifier(classifier, testing_features, testing_labels):
     predicted_label_text = le.inverse_transform(predicted_label_data)
     print "Classifier Predictions:", predicted_label_text, ""
 
-    # Calculate the accuracy of the algorithm by comparing the predicted labels to the actual labels
+    # Calculate the accuracy of the algorithm by comparing the predicted labels to the actual labels. testing_labels are actually in or out
     accuracy = accuracy_score(predicted_label_text, testing_labels)
     print "Classifier Accuracy Score", accuracy, "\n"
 
@@ -138,24 +141,24 @@ def test_classifiers(amount_of_tests, data):
     # Create counter variable for loop
     counter = 1
 
-    # Create variables to store the best values from testing
-    best_runtime_svm = 100.00000
-    top_accuracy_svm = 0.00000
-
-    best_runtime_sgd = 100.00000
-    top_accuracy_sgd = 0.00000
-
-    best_runtime_naive_bayes = 100.00000
-    top_accuracy_naive_bayes = 0.00000
-
-    best_runtime_dec_tree = 100.00000
-    top_accuracy_dec_tree = 0.00000
-
     # Create classifiers
     clf_svm = svm.SVC()
     clf_sgd = SGDClassifier()
     clf_naive_bayes = GaussianNB()
     clf_decision_tree = tree.DecisionTreeClassifier()
+
+    #record all runtimes and accuracies for each test so you can find the average
+    svm_runtime_list = list()
+    svm_accuracy_list = list()
+
+    sgd_runtime_list = list()
+    sgd_accuracy_list = list()
+
+    naive_bayes_runtime_list = list()
+    naive_bayes_accuracy_list = list()
+
+    dec_tree_runtime_list = list()
+    dec_tree_accuracy_list = list()
 
     while counter <= amount_of_tests:
         print "Test Number ", counter
@@ -172,6 +175,9 @@ def test_classifiers(amount_of_tests, data):
                                                testing_features=test_features,
                                                testing_labels=test_labels)
 
+        svm_runtime_list.append(session_runtime_svm)
+        svm_accuracy_list.append(session_accuracy_svm)
+
         print "Testing Stochastic Gradient Decent Classifier"
         clf_sgd, session_runtime_sgd = train_classifier(classifier=clf_sgd,
                                                         training_features=train_features,
@@ -180,6 +186,9 @@ def test_classifiers(amount_of_tests, data):
                                                testing_features=test_features,
                                                testing_labels=test_labels)
 
+        sgd_runtime_list.append(session_runtime_sgd)
+        sgd_accuracy_list.append(session_accuracy_sgd)
+
         print "Testing Naive Bayes Classifier"
         clf_naive_bayes, session_runtime_naive_bayes = train_classifier(classifier=clf_naive_bayes,
                                                                         training_features=train_features,
@@ -187,6 +196,8 @@ def test_classifiers(amount_of_tests, data):
         session_accuracy_naive_bayes = test_classifier(classifier=clf_naive_bayes,
                                                        testing_features=test_features,
                                                        testing_labels=test_labels)
+        naive_bayes_runtime_list.append(session_runtime_naive_bayes)
+        naive_bayes_accuracy_list.append(session_accuracy_naive_bayes)
 
         print "Testing Decision Tree Classifier"
         clf_decision_tree, session_runtime_dec_tree = train_classifier(classifier=clf_decision_tree,
@@ -195,59 +206,47 @@ def test_classifiers(amount_of_tests, data):
         session_accuracy_dec_tree = test_classifier(classifier=clf_decision_tree,
                                                     testing_features=test_features,
                                                     testing_labels=test_labels)
+        dec_tree_runtime_list.append(session_runtime_naive_bayes)
+        dec_tree_accuracy_list.append(session_accuracy_naive_bayes)
 
-        # If any of the session values are better than the best value update the best value
-        if session_runtime_svm < best_runtime_svm:
-            best_runtime_svm = session_runtime_svm
-        if session_accuracy_svm > top_accuracy_svm:
-            top_accuracy_svm = session_accuracy_svm
-
-        if session_runtime_sgd < best_runtime_sgd:
-            best_runtime_sgd = session_runtime_sgd
-        if session_accuracy_sgd > top_accuracy_sgd:
-            top_accuracy_sgd = session_accuracy_sgd
-
-        if session_runtime_naive_bayes < best_runtime_naive_bayes:
-            best_runtime_naive_bayes = session_runtime_naive_bayes
-        if session_accuracy_naive_bayes > top_accuracy_naive_bayes:
-            top_accuracy_naive_bayes = session_accuracy_naive_bayes
-
-        if session_runtime_dec_tree < best_runtime_dec_tree:
-            best_runtime_dec_tree = session_runtime_dec_tree
-        if session_accuracy_dec_tree > top_accuracy_dec_tree:
-            top_accuracy_dec_tree = session_accuracy_dec_tree
 
         counter += 1
 
-    print "Support Vector Machine Classifier Results"
-    print "Best Runtime", best_runtime_svm
-    print "Top Accuracy", top_accuracy_svm
+    print "\nSupport Vector Machine Classifier Results"
+    average_accuracy_svm = float(sum(svm_accuracy_list))/len(svm_accuracy_list)
+    print "Average Accuracy", average_accuracy_svm
+    print "Average Runtime", float(sum(svm_runtime_list))/len(svm_runtime_list)
 
-    print "Stochastic Gradient Decent Classifier Results"
-    print "Best Runtime", best_runtime_sgd
-    print "Top Accuracy", top_accuracy_sgd
+    print "\nStochastic Gradient Decent Classifier Results"
+    average_accuracy_sgd = float(sum(sgd_accuracy_list))/len(sgd_accuracy_list)
+    print "Average Accuracy", average_accuracy_sgd
+    print "Average Runtime", float(sum(sgd_runtime_list))/len(sgd_runtime_list)
 
-    print "Naive Bayes Classifier Results"
-    print "Best Runtime", best_runtime_naive_bayes
-    print "Top Accuracy", top_accuracy_naive_bayes
+    print "\nNaive Bayes Classifier Results"
+    average_accuracy_naive_bayes = float(sum(naive_bayes_accuracy_list))/len(naive_bayes_accuracy_list)
+    print "Average Accuracy", average_accuracy_naive_bayes
+    print "Average Runtime", float(sum(naive_bayes_runtime_list))/len(naive_bayes_runtime_list)
 
-    print "Decision Tree Classifier Results"
-    print "Best Runtime", best_runtime_dec_tree
-    print "Top Accuracy", top_accuracy_dec_tree
+    print "\nDecision Tree Classifier Results"
+    average_accuracy_dec_tree = float(sum(dec_tree_accuracy_list))/len(dec_tree_accuracy_list)
+    print "Average Accuracy", average_accuracy_dec_tree
+    print "Average Runtime", float(sum(dec_tree_runtime_list))/len(dec_tree_runtime_list)
     print "\n"
-    top_classifier_accuracy = top_accuracy_svm
+
+    top_classifier_accuracy = average_accuracy_svm
     most_accurate_classifier = clf_svm
 
-    if top_accuracy_sgd > top_classifier_accuracy:
-        top_classifier_accuracy = top_accuracy_sgd
+    if average_accuracy_sgd > top_classifier_accuracy:
+        top_classifier_accuracy = average_accuracy_sgd
         most_accurate_classifier = clf_sgd
 
-    if top_accuracy_naive_bayes > top_classifier_accuracy:
-        top_classifier_accuracy = top_accuracy_naive_bayes
+    if average_accuracy_naive_bayes > top_classifier_accuracy:
+        top_classifier_accuracy = average_accuracy_naive_bayes
         most_accurate_classifier = clf_naive_bayes
 
-    if top_classifier_accuracy > top_accuracy_dec_tree:
-        most_accurate_classifier = top_accuracy_dec_tree
+    if average_accuracy_dec_tree > top_classifier_accuracy:
+        top_classifier_accuracy = average_accuracy_dec_tree
+        most_accurate_classifier = clf_decision_tree
 
     return most_accurate_classifier
 
@@ -297,7 +296,7 @@ def create_token_for_scope(username, scope):
 
 def predict_track_using_data(track_link, data):
     label_encoder = create_label_encoder(data)
-    most_accurate_classifier = test_classifiers(amount_of_tests=1, data=data)
+    most_accurate_classifier = test_classifiers(amount_of_tests=5, data=data)
 
     is_track_link_valid, track_id = parse_track_link(track_link)
 
@@ -338,4 +337,7 @@ data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
 print "Please copy and paste the link to the track you would like to predict:"
 track_link = raw_input()
 
+#below: tells us if this song belongs in the playlist based on our predictions.
+#test set needed to prevent program from being over-trained. In writeup need info about why we set up test/training sets.
 predict_track_using_data(track_link=track_link, data=data)
+#take out method createTestSet from predict track usng data and move to beginning before asking for tracks
