@@ -329,6 +329,10 @@ def predict_track_using_data(track_link, data):
 
     prediction = label_encoder.inverse_transform(prediction)
     print prediction
+    if(prediction=="In"):
+        print "Based on our predictions, this song does belong in the playlist."
+    if (prediction == "Out"):
+        print "Based on our predictions, this song does NOT belong in the playlist."
 
 """
 Main Method
