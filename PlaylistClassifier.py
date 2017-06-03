@@ -288,12 +288,9 @@ def create_token_for_scope(username, scope):
         print "Can't get token for", username
 
 
-def predict_track_using_data(track_link, data):
-    label_encoder = create_label_encoder(data)
-    most_accurate_classifier = test_classifiers(amount_of_tests=5, data=data)
-
-    is_track_link_valid, track_id = parse_track_link(track_link)
-
+def predict_track_using_data(data_set):
+    label_encoder = create_label_encoder(data_set)
+    most_accurate_classifier = test_classifiers(amount_of_tests=5, data=data_set)
     scope = 'user-read-private user-read-email'
 
     # Create username and Token objects
@@ -303,35 +300,47 @@ def predict_track_using_data(track_link, data):
     # Create a Spotipy object
     sp = spotipy.Spotify(auth=token)
 
-    track_data = sp.track(track_id)
-    print "Track Name:", track_data['name']
-    print "Artist:", track_data['artists'][0]['name']
-    print "Album:", track_data['album']['name']
-    track_audio_features = sp.audio_features([track_id])[0]
+    run_loop = True
+    while run_loop:
+        print "Please copy and paste the link to the track you would like to predict:"
+        track_link = raw_input()
 
-    track_features = np.empty((0, 7), dtype=float)
-    track_features = np.append(track_features, [track_audio_features['acousticness']])
-    track_features = np.append(track_features, [track_audio_features['danceability']])
-    track_features = np.append(track_features, [track_audio_features['energy']])
-    track_features = np.append(track_features, [track_audio_features['instrumentalness']])
-    track_features = np.append(track_features, [track_audio_features['liveness']])
-    track_features = np.append(track_features, [track_audio_features['speechiness']])
-    track_features = np.append(track_features, [track_audio_features['valence']])
-    track_features = np.reshape(track_features, (1, -1))
+        track_link_is_valid, track_id = parse_track_link(track_link)
+        if track_link_is_valid:
+            track_data = sp.track(track_id)
+            print "Track Name:", track_data['name']
+            print "Artist:", track_data['artists'][0]['name']
+            print "Album:", track_data['album']['name']
+            track_audio_features = sp.audio_features([track_id])[0]
 
-    prediction = most_accurate_classifier.predict(track_features)
+            track_features = np.empty((0, 7), dtype=float)
+            track_features = np.append(track_features, [track_audio_features['acousticness']])
+            track_features = np.append(track_features, [track_audio_features['danceability']])
+            track_features = np.append(track_features, [track_audio_features['energy']])
+            track_features = np.append(track_features, [track_audio_features['instrumentalness']])
+            track_features = np.append(track_features, [track_audio_features['liveness']])
+            track_features = np.append(track_features, [track_audio_features['speechiness']])
+            track_features = np.append(track_features, [track_audio_features['valence']])
+            track_features = np.reshape(track_features, (1, -1))
 
-    prediction = label_encoder.inverse_transform(prediction)
-    print prediction
+            prediction = most_accurate_classifier.predict(track_features)
+
+            prediction = label_encoder.inverse_transform(prediction)
+            print prediction
+        else:
+            print "Track link is not valid"
+        print "Would you like to predict another song(Y or N)"
+        yes_or_no = raw_input()
+
+        if yes_or_no == "N":
+            run_loop = False
 
 """
 Main Method
 """
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
-print "Please copy and paste the link to the track you would like to predict:"
-track_link = raw_input()
 
 #below: tells us if this song belongs in the playlist based on our predictions.
 #test set needed to prevent program from being over-trained. In writeup need info about why we set up test/training sets.
-predict_track_using_data(track_link=track_link, data=data)
+predict_track_using_data(data_set=data)
 #take out method createTestSet from predict track usng data and move to beginning before asking for tracks
