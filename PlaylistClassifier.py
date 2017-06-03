@@ -20,7 +20,7 @@ from sklearn import svm
 from sklearn.linear_model import SGDClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
-
+from sklearn import model_selection
 """
 Functions
 """
@@ -34,11 +34,9 @@ def create_test_set(data_set, test_set_proportion):
 
     # Create 2D arrays to store test and training sets.
     # features array stores characteristics like acousticness and labels stores whether it is "in" or "out" of the positive examples playlist
-    train_set_features = np.empty((0, 7), dtype=float)
-    train_set_labels = np.empty((0, 1), dtype=str)
 
-    test_set_features = np.empty((0, 7), dtype=float)
-    test_set_labels = np.empty((0, 1), dtype=str)
+    data_set_features = np.empty((0, 7), dtype=float)
+    data_set_labels = np.empty((0, 1), dtype=str)
 
     for i, row in data_set.iterrows():  # i: dataframe index; row: each row in series format
 
@@ -52,19 +50,13 @@ def create_test_set(data_set, test_set_proportion):
         row_label = np.empty((0, 1), dtype=str)
         row_label = np.append(row_label, row_data[7])
 
-        # Every 10 rows
-        if i % 10 == 0:
+        data_set_features = np.append(data_set_features, [row_features], axis=0)
+        data_set_labels = np.append(data_set_labels, row_label)
 
-            # Take the row features and label and add it to the test set
-            test_set_features = np.append(test_set_features, [row_features], axis=0)
-            test_set_labels = np.append(test_set_labels, [row_label])
-            
-        else:
-
-            # Take the row features and label and add it to the training set
-            train_set_features = np.append(train_set_features, [row_features], axis=0)
-            train_set_labels = np.append(train_set_labels, [row_label])
-
+    train_set_features, test_set_features, train_set_labels, test_set_labels = model_selection.train_test_split(data_set_features,
+                                                                                                                data_set_labels,
+                                                                                                                test_size=0.1,
+                                                                                                                random_state=42)
     # Print out some data to verify that the training and test sets are proper size
     print ("{}{}".format("DataSet Size:", len(data_set)))
     print ("{}{}".format("TestSetLabels Size:", len(test_set_labels)))
@@ -73,6 +65,7 @@ def create_test_set(data_set, test_set_proportion):
     print ("{}{}".format("TrainSetFeatures Size:", len(train_set_features)))
     print "\n"
     pprint.pprint(train_set_features)
+    pprint.pprint(test_set_features)
     return test_set_features, test_set_labels, train_set_features, train_set_labels
 
 
@@ -250,6 +243,7 @@ def test_classifiers(amount_of_tests, data):
 
     return most_accurate_classifier
 
+
 def parse_track_link(track_link):
     is_link_valid = False
     track_id = ""
@@ -300,7 +294,7 @@ def predict_track_using_data(track_link, data):
 
     is_track_link_valid, track_id = parse_track_link(track_link)
 
-    scope = 'user-read-private user-read-email playlist-modify-private playlist-modify-public'
+    scope = 'user-read-private user-read-email'
 
     # Create username and Token objects
     authorization_username = get_username()
