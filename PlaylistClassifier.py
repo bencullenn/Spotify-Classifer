@@ -57,15 +57,6 @@ def create_test_set(data_set, test_set_proportion):
                                                                                                                 data_set_labels,
                                                                                                                 test_size=0.1,
                                                                                                                 random_state=42)
-    # Print out some data to verify that the training and test sets are proper size
-    print ("{}{}".format("DataSet Size:", len(data_set)))
-    print ("{}{}".format("TestSetLabels Size:", len(test_set_labels)))
-    print ("{}{}".format("TestSetFeatures Size:", len(test_set_features)))
-    print ("{}{}".format("TrainSetLabels Size:", len(train_set_labels)))
-    print ("{}{}".format("TrainSetFeatures Size:", len(train_set_features)))
-    print "\n"
-    pprint.pprint(train_set_features)
-    pprint.pprint(test_set_features)
     return test_set_features, test_set_labels, train_set_features, train_set_labels
 
 
@@ -76,7 +67,6 @@ def train_classifier(classifier, training_features, training_labels):
 
     # Normalize labels by converting label data from type string to type int
     transformed_label_data = le.fit_transform(training_labels)
-    print "Labels Transformed"
 
     # Save current time to variable
     start = time()
@@ -120,7 +110,6 @@ def test_classifier(classifier, testing_features, testing_labels):
 
     # Convert the predicted labels back into text so they can be compared
     predicted_label_text = le.inverse_transform(predicted_label_data)
-    print "Classifier Predictions:", predicted_label_text, ""
 
     # Calculate the accuracy of the algorithm by comparing the predicted labels to the actual labels. testing_labels are actually in or out
     accuracy = accuracy_score(predicted_label_text, testing_labels)
@@ -154,7 +143,7 @@ def test_classifiers(amount_of_tests, data):
     dec_tree_accuracy_list = list()
 
     while counter <= amount_of_tests:
-        print "Test Number ", counter
+        print "Running Test ", counter, " of ", amount_of_tests, "\n"
         test_features, test_labels, train_features, train_labels = create_test_set(data, .10)
 
         # Train the algorithm
@@ -202,8 +191,8 @@ def test_classifiers(amount_of_tests, data):
         dec_tree_runtime_list.append(session_runtime_naive_bayes)
         dec_tree_accuracy_list.append(session_accuracy_naive_bayes)
 
-
         counter += 1
+        print "\n"
 
     print "\nSupport Vector Machine Classifier Results"
     average_accuracy_svm = float(sum(svm_accuracy_list))/len(svm_accuracy_list)
@@ -250,7 +239,6 @@ def parse_track_link(track_link):
 
     # Create a substring by removing the first 25 characters in the string
     link_info = track_link[25:]
-    print "Link info:", link_info
 
     # If the link of a track link
     if link_info[:5] == "track":
@@ -258,8 +246,6 @@ def parse_track_link(track_link):
         print "Link belongs to a track"
         # Save the track id to the track id variable
         track_id = link_info[6:]
-
-        print "Track ID:", track_id
     else:
         print "Link does not belong to a track"
 
