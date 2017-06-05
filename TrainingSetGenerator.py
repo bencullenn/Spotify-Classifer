@@ -30,7 +30,7 @@ def create_token_for_scope(username, scope):
 
     # If given valid username token
     if token:
-        print ("Token Successfully Generated")
+        print "API Token Successfully Generated"
         return token
     else:
         print "Can't get token for", username
@@ -60,9 +60,10 @@ def get_tracks_from_playlist(playlist_id):
         for track in link_list_subset:
             tracks.append(track)
         offset_value += 1
-        print("{}{}".format("Length of playlist:", playlist_num_of_tracks))
-        print("{}{}".format("Current amount of tracks retrieved:", len(tracks)))
-        print("{}{}".format("Offset Value:", offset_value))
+
+        print "Retrieved ", len(tracks), " of ", playlist_num_of_tracks, " tracks"
+
+    print"\n"
     return tracks
 
 
@@ -70,7 +71,7 @@ def get_audio_features_for_playlist_id(playlist_id):
     tracks = get_tracks_from_playlist(playlist_id)
     links = []
 
-    #link is not actual url, but string of numbers that corresponds to track.
+    # link is not actual url, but string of numbers that corresponds to track.
     for track in tracks:
         links.append(track['track']['uri'])
 
@@ -85,7 +86,6 @@ def get_audio_features_for_playlist_id(playlist_id):
         # Adjust the end index to be at max the size of the list of links to avoid an index out of bounds error
         if len(links) < end_index:
             end_index = len(links)
-            print("{}{}".format("End index updated to:", end_index))
 
         # Create a temporary list
         link_list_subset = []
@@ -106,12 +106,9 @@ def get_audio_features_for_playlist_id(playlist_id):
         end_index += 100
 
         # Print some information to know what's happening
-        print("{}{}".format("Amount of links and audio features are the same:", len(audio_features) == len(links)))
-        print("{}{}".format("Amount of Audio Features:", len(audio_features)))
-        print("{}{}".format("Amount of links:", len(links)))
-        print("{}{}".format("Start Index:", start_index))
-        print("{}{}".format("End Index:", end_index))
-        print "\n"
+        print"Retrieved audio features for ", len(audio_features), " of ", len(links), " tracks"
+
+    print "\n"
     return audio_features
 
 
@@ -191,8 +188,6 @@ def parse_playlist_link(playlist_link):
 
     link_info = playlist_link[25:]
 
-    print "Link info:", link_info
-
     if link_info[:4] == "user":
         is_playlist = True
         print "Link belongs to a playlist"
@@ -206,11 +201,9 @@ def parse_playlist_link(playlist_link):
                     creator_username += character
                 else:
                     break
-            print "Username:", creator_username
 
             link_info = link_info[len(creator_username)+10:]
 
-            print "Link info without username:", link_info
             playlist_id = link_info
             print "\n"
     return is_playlist, creator_username, playlist_id

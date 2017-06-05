@@ -57,15 +57,6 @@ def create_test_set(data_set, test_set_proportion):
                                                                                                                 data_set_labels,
                                                                                                                 test_size=0.1,
                                                                                                                 random_state=42)
-    # Print out some data to verify that the training and test sets are proper size
-    print ("{}{}".format("DataSet Size:", len(data_set)))
-    print ("{}{}".format("TestSetLabels Size:", len(test_set_labels)))
-    print ("{}{}".format("TestSetFeatures Size:", len(test_set_features)))
-    print ("{}{}".format("TrainSetLabels Size:", len(train_set_labels)))
-    print ("{}{}".format("TrainSetFeatures Size:", len(train_set_features)))
-    print "\n"
-    pprint.pprint(train_set_features)
-    pprint.pprint(test_set_features)
     return test_set_features, test_set_labels, train_set_features, train_set_labels
 
 
@@ -76,7 +67,6 @@ def train_classifier(classifier, training_features, training_labels):
 
     # Normalize labels by converting label data from type string to type int
     transformed_label_data = le.fit_transform(training_labels)
-    print "Labels Transformed"
 
     # Save current time to variable
     start = time()
@@ -120,7 +110,6 @@ def test_classifier(classifier, testing_features, testing_labels):
 
     # Convert the predicted labels back into text so they can be compared
     predicted_label_text = le.inverse_transform(predicted_label_data)
-    print "Classifier Predictions:", predicted_label_text, ""
 
     # Calculate the accuracy of the algorithm by comparing the predicted labels to the actual labels. testing_labels are actually in or out
     accuracy = accuracy_score(predicted_label_text, testing_labels)
@@ -154,7 +143,7 @@ def test_classifiers(amount_of_tests, data):
     dec_tree_accuracy_list = list()
 
     while counter <= amount_of_tests:
-        print "Test Number ", counter
+        print "Running Test ", counter, " of ", amount_of_tests, "\n"
         test_features, test_labels, train_features, train_labels = create_test_set(data, .10)
 
         # Train the algorithm
@@ -202,8 +191,8 @@ def test_classifiers(amount_of_tests, data):
         dec_tree_runtime_list.append(session_runtime_naive_bayes)
         dec_tree_accuracy_list.append(session_accuracy_naive_bayes)
 
-
         counter += 1
+        print "\n"
 
     print "\nSupport Vector Machine Classifier Results"
     average_accuracy_svm = float(sum(svm_accuracy_list))/len(svm_accuracy_list)
@@ -250,7 +239,6 @@ def parse_track_link(track_link):
 
     # Create a substring by removing the first 25 characters in the string
     link_info = track_link[25:]
-    print "Link info:", link_info
 
     # If the link of a track link
     if link_info[:5] == "track":
@@ -258,8 +246,6 @@ def parse_track_link(track_link):
         print "Link belongs to a track"
         # Save the track id to the track id variable
         track_id = link_info[6:]
-
-        print "Track ID:", track_id
     else:
         print "Link does not belong to a track"
 
@@ -288,12 +274,9 @@ def create_token_for_scope(username, scope):
         print "Can't get token for", username
 
 
-def predict_track_using_data(track_link, data):
-    label_encoder = create_label_encoder(data)
-    most_accurate_classifier = test_classifiers(amount_of_tests=5, data=data)
-
-    is_track_link_valid, track_id = parse_track_link(track_link)
-
+def predict_track_using_data(data_set):
+    label_encoder = create_label_encoder(data_set)
+    most_accurate_classifier = test_classifiers(amount_of_tests=5, data=data_set)
     scope = 'user-read-private user-read-email'
 
     # Create username and Token objects
@@ -303,39 +286,47 @@ def predict_track_using_data(track_link, data):
     # Create a Spotipy object
     sp = spotipy.Spotify(auth=token)
 
-    track_data = sp.track(track_id)
-    print "Track Name:", track_data['name']
-    print "Artist:", track_data['artists'][0]['name']
-    print "Album:", track_data['album']['name']
-    track_audio_features = sp.audio_features([track_id])[0]
+    run_loop = True
+    while run_loop:
+        print "Please copy and paste the link to the track you would like to predict:"
+        track_link = raw_input()
 
-    track_features = np.empty((0, 7), dtype=float)
-    track_features = np.append(track_features, [track_audio_features['acousticness']])
-    track_features = np.append(track_features, [track_audio_features['danceability']])
-    track_features = np.append(track_features, [track_audio_features['energy']])
-    track_features = np.append(track_features, [track_audio_features['instrumentalness']])
-    track_features = np.append(track_features, [track_audio_features['liveness']])
-    track_features = np.append(track_features, [track_audio_features['speechiness']])
-    track_features = np.append(track_features, [track_audio_features['valence']])
-    track_features = np.reshape(track_features, (1, -1))
+        track_link_is_valid, track_id = parse_track_link(track_link)
+        if track_link_is_valid:
+            track_data = sp.track(track_id)
+            print "Track Name:", track_data['name']
+            print "Artist:", track_data['artists'][0]['name']
+            print "Album:", track_data['album']['name']
+            track_audio_features = sp.audio_features([track_id])[0]
 
-    prediction = most_accurate_classifier.predict(track_features)
+            track_features = np.empty((0, 7), dtype=float)
+            track_features = np.append(track_features, [track_audio_features['acousticness']])
+            track_features = np.append(track_features, [track_audio_features['danceability']])
+            track_features = np.append(track_features, [track_audio_features['energy']])
+            track_features = np.append(track_features, [track_audio_features['instrumentalness']])
+            track_features = np.append(track_features, [track_audio_features['liveness']])
+            track_features = np.append(track_features, [track_audio_features['speechiness']])
+            track_features = np.append(track_features, [track_audio_features['valence']])
+            track_features = np.reshape(track_features, (1, -1))
 
-    prediction = label_encoder.inverse_transform(prediction)
-    print prediction
-    if(prediction=="In"):
-        print "Based on our predictions, this song does belong in the playlist."
-    if (prediction == "Out"):
-        print "Based on our predictions, this song does NOT belong in the playlist."
+            prediction = most_accurate_classifier.predict(track_features)
+
+            prediction = label_encoder.inverse_transform(prediction)
+            print prediction
+        else:
+            print "Track link is not valid"
+        print "Would you like to predict another song(Y or N)"
+        yes_or_no = raw_input()
+
+        if yes_or_no == "N":
+            run_loop = False
 
 """
 Main Method
 """
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
-print "Please copy and paste the link to the track you would like to predict:"
-track_link = raw_input()
 
 #below: tells us if this song belongs in the playlist based on our predictions.
 #test set needed to prevent program from being over-trained. In writeup need info about why we set up test/training sets.
-predict_track_using_data(track_link=track_link, data=data)
+predict_track_using_data(data_set=data)
 #take out method createTestSet from predict track usng data and move to beginning before asking for tracks
