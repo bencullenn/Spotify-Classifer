@@ -52,15 +52,21 @@ def get_tracks_from_playlist(playlist_id):
     # Get the total number of tracks in the playlist and create a variable to manage the offset value
     playlist_num_of_tracks = playlist['tracks']['total']
     offset_value = 0
-
+    limit = 100
     # While the tracks list contains less than the number of tracks
     # in the playlist add chunks of 100 songs at a time to the tracks playlist
     while len(tracks) < playlist_num_of_tracks:
-        link_list_subset = sp.user_playlist_tracks(authorization_username, playlist_id, fields='items', offset=offset_value)['items']
+        link_list_subset = sp.user_playlist_tracks(authorization_username,
+                                                   playlist_id,
+                                                   fields='items',
+                                                   offset=offset_value,
+                                                   limit=limit)['items']
         for track in link_list_subset:
             tracks.append(track)
         offset_value += 1
-
+        if (offset_value+1)*100 > playlist_num_of_tracks:
+            difference = (offset_value+1)*100 - playlist_num_of_tracks
+            limit = 100 - difference
         print "Retrieved ", len(tracks), " of ", playlist_num_of_tracks, " tracks"
 
     print"\n"
@@ -205,7 +211,6 @@ def parse_playlist_link(playlist_link):
             link_info = link_info[len(creator_username)+10:]
 
             playlist_id = link_info
-            print "\n"
     return is_playlist, creator_username, playlist_id
 
 
@@ -229,12 +234,17 @@ token = create_token_for_scope(scope=scope, username=authorization_username)
 # Create a Spotipy object
 sp = spotipy.Spotify(auth=token)
 
+print "\n"
+print "Parsing positive examples playlist link"
 is_pos_playlist_link_valid, pos_playlist_username, pos_playlist_id = parse_playlist_link(positive_examples_playlist_link)
+print "Parsing negative examples playlist link"
 is_neg_playlist_link_valid, neg_playlist_username, neg_playlist_id = parse_playlist_link(negative_examples_playlist_link)
-
+print "\n"
 if is_pos_playlist_link_valid:
     if is_neg_playlist_link_valid:
+        print "Fetching data for positive examples playlist"
         positive_examples_data = get_audio_features_for_playlist_id(pos_playlist_id)
+        print "Fetching data for negative examples playlist"
         negative_examples_data = get_audio_features_for_playlist_id(neg_playlist_id)
         write_audio_features_to_csv_file(positive_audio_features=positive_examples_data,
                                          negative_audio_features=negative_examples_data)
