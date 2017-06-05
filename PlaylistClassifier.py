@@ -199,7 +199,7 @@ def test_classifiers(amount_of_tests, data):
     print "Average Accuracy", average_accuracy_svm
     print "Average Runtime", float(sum(svm_runtime_list))/len(svm_runtime_list)
 
-    print "\nStochastic Gradient Decent Classifier Results"
+    print "\nStochastic Gradient Descent Classifier Results"
     average_accuracy_sgd = float(sum(sgd_accuracy_list))/len(sgd_accuracy_list)
     print "Average Accuracy", average_accuracy_sgd
     print "Average Runtime", float(sum(sgd_runtime_list))/len(sgd_runtime_list)
@@ -218,6 +218,7 @@ def test_classifiers(amount_of_tests, data):
     top_classifier_accuracy = average_accuracy_svm
     most_accurate_classifier = clf_svm
 
+    # determine the best classifier using average accuracy of each one
     if average_accuracy_sgd > top_classifier_accuracy:
         top_classifier_accuracy = average_accuracy_sgd
         most_accurate_classifier = clf_sgd
@@ -312,7 +313,10 @@ def predict_track_using_data(data_set):
             prediction = most_accurate_classifier.predict(track_features)
 
             prediction = label_encoder.inverse_transform(prediction)
-            print prediction
+            if prediction=="In":
+                print "Based on our predictions, this song belongs in the playlist"
+            else:
+                print "Based on our predictions, this song does NOT belong in the playlist"
         else:
             print "Track link is not valid"
         print "Would you like to predict another song(Y or N)"
@@ -327,6 +331,5 @@ Main Method
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
 
 #below: tells us if this song belongs in the playlist based on our predictions.
-#test set needed to prevent program from being over-trained. In writeup need info about why we set up test/training sets.
 predict_track_using_data(data_set=data)
 #take out method createTestSet from predict track usng data and move to beginning before asking for tracks
