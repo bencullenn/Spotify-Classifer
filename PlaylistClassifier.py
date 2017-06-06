@@ -25,16 +25,11 @@ from sklearn import model_selection
 Functions
 """
 
-#need to randomize creating test set so it's not the same each time. Use shufflesplit
-#print out
+
 def create_test_set(data_set, test_set_proportion):
-
-    test_size = int(len(data_set) * test_set_proportion)
-    train_size = int(len(data_set) * (1 - test_set_proportion))
-
     # Create 2D arrays to store test and training sets.
-    # features array stores characteristics like acousticness and labels stores whether it is "in" or "out" of the positive examples playlist
-
+    # Features array stores characteristics such as acousticness
+    # Labels array indicated whether a song is "in" or "out" of the positive examples playlist
     data_set_features = np.empty((0, 7), dtype=float)
     data_set_labels = np.empty((0, 1), dtype=str)
 
@@ -73,6 +68,7 @@ def train_classifier(classifier, training_features, training_labels):
 
     # Train algorithm with data
     clf.fit(training_features, transformed_label_data)
+
     # Calculate how long it took to train algorithm
     runtime = time() - start
     print "Trained Classifier"
@@ -94,6 +90,7 @@ def create_label_encoder(data_set):
         row_label = np.append(row_label, row_data[7])
 
         data_set_labels = np.append(data_set_labels, [row_label])
+
     # Fit label encoder so that it can turn labels back into text
     le.fit(data_set_labels)
     return le
@@ -111,7 +108,7 @@ def test_classifier(classifier, testing_features, testing_labels):
     # Convert the predicted labels back into text so they can be compared
     predicted_label_text = le.inverse_transform(predicted_label_data)
 
-    # Calculate the accuracy of the algorithm by comparing the predicted labels to the actual labels. testing_labels are actually in or out
+    # Calculate the accuracy of the algorithm by comparing the predicted labels to the actual labels
     accuracy = accuracy_score(predicted_label_text, testing_labels)
     print "Classifier Accuracy Score", accuracy, "\n"
 
@@ -129,7 +126,7 @@ def test_classifiers(amount_of_tests, data):
     clf_naive_bayes = GaussianNB()
     clf_decision_tree = tree.DecisionTreeClassifier()
 
-    #record all runtimes and accuracies for each test so you can find the average
+    # record all run times and accuracies for each test so you can find the average
     svm_runtime_list = list()
     svm_accuracy_list = list()
 
@@ -188,8 +185,8 @@ def test_classifiers(amount_of_tests, data):
         session_accuracy_dec_tree = test_classifier(classifier=clf_decision_tree,
                                                     testing_features=test_features,
                                                     testing_labels=test_labels)
-        dec_tree_runtime_list.append(session_runtime_naive_bayes)
-        dec_tree_accuracy_list.append(session_accuracy_naive_bayes)
+        dec_tree_runtime_list.append(session_runtime_dec_tree)
+        dec_tree_accuracy_list.append(session_accuracy_dec_tree)
 
         counter += 1
         print "\n"
@@ -313,7 +310,7 @@ def predict_track_using_data(data_set):
             prediction = most_accurate_classifier.predict(track_features)
 
             prediction = label_encoder.inverse_transform(prediction)
-            if prediction=="In":
+            if prediction == "In":
                 print "Based on our predictions, this song belongs in the playlist"
             else:
                 print "Based on our predictions, this song does NOT belong in the playlist"
@@ -330,6 +327,5 @@ Main Method
 """
 data = pd.read_csv(filepath_or_buffer='data.csv', sep=' ')
 
-#below: tells us if this song belongs in the playlist based on our predictions.
+# Creates a prediction of whether a given song belongs in the playlist using the data read from the training set
 predict_track_using_data(data_set=data)
-#take out method createTestSet from predict track usng data and move to beginning before asking for tracks
