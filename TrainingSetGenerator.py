@@ -204,8 +204,8 @@ def parse_playlist_link(playlist_link):
 
     if link_info[:4] == "user":
         is_playlist = True
-        print "Link belongs to a playlist"
         link_info = link_info[5:]
+        print "Link belongs to playlist \"", get_playlist_for_id(link_info)['name'], "\""
     else:
         print "Link does not belong to a playlist"
 
@@ -261,6 +261,6 @@ if is_pos_playlist_link_valid:
         write_audio_features_to_csv_file(positive_audio_features=positive_examples_data,
                                          negative_audio_features=negative_examples_data)
     else:
-        print "Negative playlist link is not valid"
+        print "Negative Examples playlist link is not valid"
 else:
-    print "Positive playlist link is not valid"
+    print "Positive Examples playlist link is not valid"
