@@ -209,8 +209,7 @@ def test_classifiers(amount_of_tests, data):
     print "\nDecision Tree Classifier Results"
     average_accuracy_dec_tree = float(sum(dec_tree_accuracy_list))/len(dec_tree_accuracy_list)
     print "Average Accuracy", average_accuracy_dec_tree
-    print "Average Runtime", float(sum(dec_tree_runtime_list))/len(dec_tree_runtime_list)
-    print "\n"
+    print "Average Runtime", float(sum(dec_tree_runtime_list))/len(dec_tree_runtime_list), "\n"
 
     top_classifier_accuracy = average_accuracy_svm
     most_accurate_classifier = clf_svm
@@ -231,7 +230,7 @@ def test_classifiers(amount_of_tests, data):
         most_accurate_classifier = clf_decision_tree
         classifier_type_message = "Decision Tree Classifier was found to be the most accurate algorithm"
 
-    print classifier_type_message
+    print classifier_type_message, "\n\n"
     return most_accurate_classifier
 
 
@@ -278,7 +277,7 @@ def create_token_for_scope(username, scope):
 
 def predict_track_using_data(data_set):
     label_encoder = create_label_encoder(data_set)
-    most_accurate_classifier = test_classifiers(amount_of_tests=5, data=data_set)
+    most_accurate_classifier = test_classifiers(amount_of_tests=1, data=data_set)
     scope = 'user-read-private user-read-email'
 
     # Create username and Token objects
@@ -290,15 +289,18 @@ def predict_track_using_data(data_set):
 
     run_loop = True
     while run_loop:
+        print "\n"
         print "Please copy and paste the link to the track you would like to predict:"
         track_link = raw_input()
 
         track_link_is_valid, track_id = parse_track_link(track_link)
         if track_link_is_valid:
             track_data = sp.track(track_id)
+            print "\n"
             print "Track Name:", track_data['name']
             print "Artist:", track_data['artists'][0]['name']
             print "Album:", track_data['album']['name']
+            print "\n"
             track_audio_features = sp.audio_features([track_id])[0]
 
             track_features = np.empty((0, 7), dtype=float)
