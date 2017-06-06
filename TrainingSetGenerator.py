@@ -1,12 +1,12 @@
 """
-This class takes a link to a Spotify playlist and converts that playlist to a training set 
-which can be used to train machine learning algorithms in the form of a text file
+This class takes two links from two Spotify playlists, one of positve examples and one of negative examples,
+and converts that playlist to a training set which can be used to train machine learning algorithms
+in the form of a csv file
 """
 
 import sys
 import spotipy
 import spotipy.util as util
-import pprint
 import csv
 
 '''
@@ -25,15 +25,15 @@ def get_username():
 
 
 def create_token_for_scope(username, scope):
-    # Get token for user
+    # Get api_token for user
     token = util.prompt_for_user_token(username, scope)
 
-    # If given valid username token
+    # If given valid username api_token
     if token:
         print "API Token Successfully Generated"
         return token
     else:
-        print "Can't get token for", username
+        print "Can't get token for Username:", username
 
 
 def get_playlist_for_id(playlist_id):
@@ -49,24 +49,32 @@ def get_tracks_from_playlist(playlist_id):
     # and another to store the uri link data for audio feature processing
     tracks = []
 
-    # Get the total number of tracks in the playlist and create a variable to manage the offset value
+    # Get the total number of tracks in the playlist and create a variables to manage the offset and limit values
     playlist_num_of_tracks = playlist['tracks']['total']
     offset_value = 0
     limit = 100
+
     # While the tracks list contains less than the number of tracks
     # in the playlist add chunks of 100 songs at a time to the tracks playlist
     while len(tracks) < playlist_num_of_tracks:
-        link_list_subset = sp.user_playlist_tracks(authorization_username,
-                                                   playlist_id,
-                                                   fields='items',
-                                                   offset=offset_value,
-                                                   limit=limit)['items']
-        for track in link_list_subset:
+        playlist_tracks_subset = sp.user_playlist_tracks(authorization_username,
+                                                         playlist_id,
+                                                         fields='items',
+                                                         offset=offset_value,
+                                                         limit=limit)['items']
+
+        # Add the retrieved tracks to the list of all the tracks
+        for track in playlist_tracks_subset:
             tracks.append(track)
+
+        # Update the offset value
         offset_value += 1
+
+        # Check if the playlist contains less than 100 more songs and adjust the limit value accordingly
         if (offset_value+1)*100 > playlist_num_of_tracks:
             difference = (offset_value+1)*100 - playlist_num_of_tracks
             limit = 100 - difference
+
         print "Retrieved ", len(tracks), " of ", playlist_num_of_tracks, " tracks"
 
     print"\n"
@@ -126,7 +134,7 @@ def display_playlist(playlist_id):
     print playlist['name']
     print"___________________________\n"
 
-    # Print out the name, artist, album, and link for each song in the playlist and add uri data to links array
+    # Print out the name, artist, album, and link for each song in the playlist
     for track in tracks:
         print track['track']['name']
         print track['track']['artists'][0]['name']
@@ -155,12 +163,12 @@ def write_audio_features_to_csv_file(positive_audio_features, negative_audio_fea
         negative_example_index = 0
         positive_example_index = 0
 
-        # Get size of datasets
-        postive_example_size = len(positive_audio_features)
+        # Get size of data sets
+        positive_example_size = len(positive_audio_features)
         negative_examples_size = len(negative_audio_features)
 
         # While there are more positive data examples
-        while positive_example_index < postive_example_size:
+        while positive_example_index < positive_example_size:
 
             data_writer.writerow([positive_audio_features[positive_example_index]['acousticness'],
                                  positive_audio_features[positive_example_index]['danceability'],
@@ -215,37 +223,41 @@ def parse_playlist_link(playlist_link):
 
 
 """
-Main Code
+Main Method
 """
-# Define the scope of what you would like to access from the user
-scope = 'user-read-private user-read-email'
+# Define the scope of information you would like to access from the user
+account_access_scope = 'user-read-private user-read-email'
 
-# Get the ID's for the playlists of your positive and negative examples
+# Get the links for the playlists of your positive and negative examples
 print"Please input the link to your playlist of positive examples:"
 positive_examples_playlist_link = raw_input()
 print"Please input the link to your playlist of negative examples:"
 negative_examples_playlist_link = raw_input()
 
 
-# Create username and Token objects
+# Create username and API Token objects
 authorization_username = get_username()
-token = create_token_for_scope(scope=scope, username=authorization_username)
+api_token = create_token_for_scope(scope=account_access_scope, username=authorization_username)
 
 # Create a Spotipy object
-sp = spotipy.Spotify(auth=token)
+sp = spotipy.Spotify(auth=api_token)
 
 print "\n"
 print "Parsing positive examples playlist link"
 is_pos_playlist_link_valid, pos_playlist_username, pos_playlist_id = parse_playlist_link(positive_examples_playlist_link)
+
 print "Parsing negative examples playlist link"
 is_neg_playlist_link_valid, neg_playlist_username, neg_playlist_id = parse_playlist_link(negative_examples_playlist_link)
 print "\n"
+
 if is_pos_playlist_link_valid:
     if is_neg_playlist_link_valid:
         print "Fetching data for positive examples playlist"
         positive_examples_data = get_audio_features_for_playlist_id(pos_playlist_id)
+
         print "Fetching data for negative examples playlist"
         negative_examples_data = get_audio_features_for_playlist_id(neg_playlist_id)
+
         write_audio_features_to_csv_file(positive_audio_features=positive_examples_data,
                                          negative_audio_features=negative_examples_data)
     else:

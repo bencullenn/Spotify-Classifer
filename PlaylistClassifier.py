@@ -110,7 +110,7 @@ def test_classifier(classifier, testing_features, testing_labels):
 
     # Calculate the accuracy of the algorithm by comparing the predicted labels to the actual labels
     accuracy = accuracy_score(predicted_label_text, testing_labels)
-    print "Classifier Accuracy Score", accuracy, "\n"
+    print "Classifier Accuracy Score:", round(accuracy, 2), "\n"
 
     # Return accuracy
     return accuracy
@@ -214,20 +214,24 @@ def test_classifiers(amount_of_tests, data):
 
     top_classifier_accuracy = average_accuracy_svm
     most_accurate_classifier = clf_svm
+    classifier_type_message = "Support Vector Machine Classifier was found to be the most accurate algorithm"
 
     # determine the best classifier using average accuracy of each one
     if average_accuracy_sgd > top_classifier_accuracy:
         top_classifier_accuracy = average_accuracy_sgd
         most_accurate_classifier = clf_sgd
+        classifier_type_message = "Stochastic Gradient Descent Classifier was found to be the most accurate algorithm"
 
     if average_accuracy_naive_bayes > top_classifier_accuracy:
         top_classifier_accuracy = average_accuracy_naive_bayes
         most_accurate_classifier = clf_naive_bayes
+        classifier_type_message = "Naive Bayes Classifier was found to be the most accurate algorithm"
 
     if average_accuracy_dec_tree > top_classifier_accuracy:
-        top_classifier_accuracy = average_accuracy_dec_tree
         most_accurate_classifier = clf_decision_tree
+        classifier_type_message = "Decision Tree Classifier was found to be the most accurate algorithm"
 
+    print classifier_type_message
     return most_accurate_classifier
 
 
@@ -261,15 +265,15 @@ def get_username():
 
 
 def create_token_for_scope(username, scope):
-    # Get token for user
+    # Get api_token for user
     token = util.prompt_for_user_token(username, scope)
 
-    # If given valid username token
+    # If given valid username api_token
     if token:
-        print ("Token Successfully Generated")
+        print ("API Token Successfully Generated")
         return token
     else:
-        print "Can't get token for", username
+        print "Can't get token for Username:", username
 
 
 def predict_track_using_data(data_set):
